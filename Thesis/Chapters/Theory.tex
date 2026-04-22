@@ -2,8 +2,8 @@
 \chapter{Theory}%
 \label{ch:theory}
 
-\section{Hand anatomy}%
-\label{sec:theory_hand_anatomy}
+\section{Anatomy}%
+\label{sec:theory_anatomy}
 
 The hand is a complex biomechanical system, comprised of many different bones, muscles, tendons, and ligaments. To explain different aspects of the hand in relation to one another, we use \textit{anatomical terminology} [\cite{AnatomicalTerminologySEER}], or more specifically \textit{anatomical directional terms}. Additionally when describing actions of muscles upon the skeleton, we use \textit{anatomical terms of movement} [\cite{TermsOfMovementTeachMeAnatomy}].
 
@@ -42,7 +42,66 @@ To explain the actions of muscles upon the skeleton, we use anatomical terms of 
     \label{fig:theory_anatomical_terms_of_movement}
 \end{figure}
 
-\subsection{Finger anatomy}%
-\label{subsec:theory_finger_anatomy}
+\subsection{Hand anatomy}%
+\label{subsec:theory_hand_anatomy}
+The hand is comprised of several bones, muscles, tendons, and ligaments. The bones, illustrated in Figure~\ref{fig:theory_hand_bones}, include the \textit{carpals}, \textit{metacarpals}, and \textit{phalanges}. The carpals make out the wrist, the metacarpals make out the palm, and the phalanges make out the fingers. The thumb has two phalanges, while the other fingers have three. The bones of interest are the phalanges (marked in green), as they are the ones being moved by the exoskeleton. The metacarpals are assumed stationary for the task at hand, as the exoskeleton will provide stiffness to the palm and wrist. 
+
+The phalanges are further divided into three sections: the \textit{proximal phalanges}, the \textit{middle phalanges}, and the \textit{distal phalanges}. The proximal phalanges are the ones closest to the palm, while the distal phalanges are the ones furthest from the palm. The middle phalanges are the ones in between. The thumb does not have a middle phalanx, as it only has two phalanges.
+
+\begin{figure}
+    \centering
+    \adjustbox{trim=0 {.30\height} 0 {.03\height}, clip, width=0.8\textwidth}{%
+        \includegraphics{Figures/Theory/hand_bones_no_bg.png}%
+    }
+    \caption{The bones of the hand. Image from author.}%
+    \label{fig:theory_hand_bones}
+\end{figure}
+
+Further details about the joints are shown in Figure~\ref{fig:theory_hand_joints}. The joints of interest are the \textit{metacarpophalangeal joints} (MCP), the \textit{proximal interphalangeal joints} (PIP), and the \textit{distal interphalangeal joints} (DIP). The MCP joints are the ones between the metacarpals and the proximal phalanges, while the PIP joints are the ones between the proximal phalanges and the middle phalanges, and the DIP joints are the ones between the middle phalanges and the distal phalanges. The thumb only has an MCP joint and an interphalangeal joint (IP), as it does not have a middle phalanx.
+
+At each of the joints, there are collateral ligaments that provide stability. For the PIP, IP and DIP joints, they provide stiffness that prevents side to side motion. For the MCP joints they're relaxed when the finger is extended, facilitating for adduction and abduction, but stiff when the finger is flexed.
 
 
+\begin{figure}
+    \centering
+    \adjustbox{trim=0 {.30\height} 0 {.03\height}, clip, width=0.8\textwidth}{%
+        \includegraphics{Figures/Theory/hand_joints_2_pdf_no_bg.png}%
+    }
+    \caption{The joints of the hand. Image from author.}%
+    \label{fig:theory_hand_joints}
+\end{figure}
+
+\section{Control}%
+\label{sec:theory_control}
+
+\subsection{State-Space representation}%
+\label{subsec:theory_control_state_space}
+A way to express a n'th order ordinary differential equation (ODE) is to express it as a system of n first order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for linear time-invariant (LTI) systems is the following:
+\begin{equation}
+\label{eq:theory_state_space_representation}
+\begin{aligned}
+    \dot{\mathbf{x}}(t) &= \mathbf{A}\mathbf{x}(t) + \mathbf{B}\mathbf{u}(t) + \mathbf{d}(t),\\
+    \mathbf{y}(t) &= \mathbf{C}\mathbf{x}(t),
+\end{aligned}
+\qquad
+\begin{aligned}
+    \mathbf{x}(t) &\in \mathbb{R}^n, &
+    \mathbf{u}(t) &\in \mathbb{R}^m, &
+    \mathbf{y}(t) &\in \mathbb{R}^p, &
+    \mathbf{d}(t) &\in \mathbb{R}^n, \\
+    \mathbf{A}    &\in \mathbb{R}^{n \times n}, &
+    \mathbf{B}    &\in \mathbb{R}^{n \times m}, &
+    \mathbf{C}    &\in \mathbb{R}^{p \times n}. &&
+\end{aligned}
+\end{equation}
+
+Here, $\mathbf{x}(t)$ is the state vector, which contains all the information about the system at time $t$. $\mathbf{u}(t)$ is the input vector at time $t$. $\mathbf{y}(t)$ is the output vector, which contains all the measurements of the system at time $t$. $\mathbf{d}(t)$ is a disturbance vector.
+
+\subsection{Controllability}%
+\label{subsec:theory_control_controllability}
+A system is said to be \textit{controllable} if it is possible to drive the state of the system from any initial state to any desired final state in finite time, using an appropriate control input. For a LTI system, controllability can be determined by the rank of the controllability matrix $\mathcal{C}$, defined as:
+\begin{equation}
+    \mathcal{C} = [\mathbf{B}, \mathbf{A}\mathbf{B}, \mathbf{A}^2\mathbf{B}, \ldots, \mathbf{A}^{n-1}\mathbf{B}].
+\end{equation}
+
+If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, then the system is controllable.

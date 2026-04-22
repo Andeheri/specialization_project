@@ -11,6 +11,8 @@
 \usepackage{microtype}          % Better text justification
 \usepackage{lmodern}            % Better font rendering
 \usepackage{setspace}
+\usepackage{siunitx}
+\DeclareSIUnit{\rpm}{rpm}
 \onehalfspacing
 
 % -----------------------------------------------------------------------------
@@ -50,6 +52,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{mathtools}          % Extends amsmath
+\usepackage{physics}            % \dv, \pdv, \abs, \norm, \qty, \grad, \curl, etc.
 
 % Theorem environments
 \theoremstyle{plain}
@@ -67,6 +70,7 @@
 % Figures and tables
 % -----------------------------------------------------------------------------
 \usepackage{graphicx}
+\usepackage{adjustbox}          % Percentage-based image cropping
 \usepackage{float}
 \usepackage{booktabs}           % Professional tables (\toprule, \midrule, etc.)
 \usepackage{caption}
