@@ -95,11 +95,16 @@
     linkcolor=black,
     citecolor=blue,
     urlcolor=blue,
-    pdftitle={Masters Thesis},
-    pdfauthor={Martin Fredholm},
+    pdftitle={Specialization Project Thesis},
+    pdfauthor={Anders Haarberg Eriksen},
 ]{hyperref}
 
 \usepackage[noabbrev, capitalise]{cleveref}   % \cref{} for smart references
+
+% Joint/segment name subscripts — uppercase but rendered at scriptscriptstyle
+% so capitals appear similar in visual size to lowercase subscripts.
+% Usage: \varphi_{\jnt{MCP}}
+\newcommand{\jnt}[1]{{\scriptscriptstyle\mathrm{#1}}}
 
 % -----------------------------------------------------------------------------
 % Misc

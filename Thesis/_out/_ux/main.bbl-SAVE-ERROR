@@ -1,0 +1,245 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/apasortcite//global/global/global}
+    \entry{AnatomicalTerminologySEER}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=2cd1feffd5a7e94e8f7285492f01b34b}{%
+           family={{National Cancer Institute}},
+           familyi={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{fullhash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{fullhashraw}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{bibnamehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authorbibnamehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authornamehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authorfullhash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authorfullhashraw}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Anatomical {{Terminology}} | {{SEER Training}}}
+      \field{urlday}{13}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://training.seer.cancer.gov/anatomy/body/terminology.html
+      \endverb
+      \verb{url}
+      \verb https://training.seer.cancer.gov/anatomy/body/terminology.html
+      \endverb
+    \endentry
+    \entry{TeachMeAnatomyTermsOfLocation}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=66d4af29f695724193869aefff7dc927}{%
+           family={{TeachMeAnatomy}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhashraw}{66d4af29f695724193869aefff7dc927}
+      \strng{bibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorbibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authornamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhashraw}{66d4af29f695724193869aefff7dc927}
+      \field{extraname}{1}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradate}{1}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Anatomical Terms of Location}
+      \field{urlday}{14}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-location/
+      \endverb
+      \verb{url}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-location/
+      \endverb
+    \endentry
+    \entry{TermsOfMovementTeachMeAnatomy}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=66d4af29f695724193869aefff7dc927}{%
+           family={{TeachMeAnatomy}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhashraw}{66d4af29f695724193869aefff7dc927}
+      \strng{bibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorbibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authornamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhashraw}{66d4af29f695724193869aefff7dc927}
+      \field{extraname}{2}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradate}{2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Anatomical Terms of Movement}
+      \field{urlday}{15}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-movement/
+      \endverb
+      \verb{url}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-movement/
+      \endverb
+    \endentry
+  \enddatalist
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{AnatomicalTerminologySEER}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=2cd1feffd5a7e94e8f7285492f01b34b}{%
+           family={{National Cancer Institute}},
+           familyi={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{fullhash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{fullhashraw}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{bibnamehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authorbibnamehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authornamehash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authorfullhash}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \strng{authorfullhashraw}{2cd1feffd5a7e94e8f7285492f01b34b}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Anatomical {{Terminology}} | {{SEER Training}}}
+      \field{urlday}{13}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://training.seer.cancer.gov/anatomy/body/terminology.html
+      \endverb
+      \verb{url}
+      \verb https://training.seer.cancer.gov/anatomy/body/terminology.html
+      \endverb
+    \endentry
+    \entry{TeachMeAnatomyTermsOfLocation}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=66d4af29f695724193869aefff7dc927}{%
+           family={{TeachMeAnatomy}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhashraw}{66d4af29f695724193869aefff7dc927}
+      \strng{bibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorbibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authornamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhashraw}{66d4af29f695724193869aefff7dc927}
+      \field{extraname}{1}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradate}{1}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Anatomical Terms of Location}
+      \field{urlday}{14}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-location/
+      \endverb
+      \verb{url}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-location/
+      \endverb
+    \endentry
+    \entry{TermsOfMovementTeachMeAnatomy}{online}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=66d4af29f695724193869aefff7dc927}{%
+           family={{TeachMeAnatomy}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{fullhashraw}{66d4af29f695724193869aefff7dc927}
+      \strng{bibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorbibnamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authornamehash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhash}{66d4af29f695724193869aefff7dc927}
+      \strng{authorfullhashraw}{66d4af29f695724193869aefff7dc927}
+      \field{extraname}{2}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradate}{2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Anatomical Terms of Movement}
+      \field{urlday}{15}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-movement/
+      \endverb
+      \verb{url}
+      \verb https://teachmeanatomy.info/the-basics/anatomical-terminology/terms-of-movement/
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

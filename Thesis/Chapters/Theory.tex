@@ -71,6 +71,67 @@ At each of the joints, there are collateral ligaments that provide stability. Fo
     \label{fig:theory_hand_joints}
 \end{figure}
 
+\section{Modelling}%
+\label{sec:theory_modelling}
+
+\subsection{Homogenous transformations}%
+\label{subsec:theory_modelling_homogenous_transformations}
+
+When modelling kinematic chains, we often need to move between frames. This often includes both rotation and translation. An efficient way to represent this is by using \textit{homogenous transformations}. 
+
+\subsection*{Definition}
+For a $2$D system, the rotation matrix for a counter-clockwise rotation by an angle $\theta$ is given by:
+
+\begin{equation}
+    \mathbf{R}(\theta) = \begin{bmatrix}
+        \cos(\theta) & -\sin(\theta) \\
+        \sin(\theta) & \cos(\theta)
+    \end{bmatrix}.
+\end{equation}
+
+Given a translation vector from frame $i$ to frame $j$, written in terms of frame $i$, $\mathbf{d}_i^j = \begin{bmatrix}
+    d_x^i \\
+    d_y^i
+\end{bmatrix}$, the homogenous transformation matrix from frame $j$ to frame $i$, describing the rotation $\theta$ and translation $\mathbf{d}_i^j$ from frame $i$ to frame $j$, can be expressed as:
+
+\begin{equation}
+    \label{eq:theory_homogenous_transformation}
+    \mathbf{H}_j^i = \begin{bmatrix}
+        \mathbf{R}(\theta) & \mathbf{d}_i^j \\
+        \mathbf{0}_{1 \times 2} & 1
+    \end{bmatrix}.
+\end{equation}
+
+Points represented in terms of homogenous transformations are represented as a 3D vector, where the first two elements represent the coordinates of the point in the plane, and the third element is always $1$. For example, a point $\mathbf{p}_n$ in frame $n$ with coordinates $(x,y)$ can be represented as:
+
+\begin{equation}
+    \mathbf{p}_n = \begin{bmatrix}
+        p_x^n \\
+        p_y^n \\
+        1
+    \end{bmatrix}.
+\end{equation}
+
+\subsection*{Useful properties}
+
+Given a kinematic chain of size $n$, we can express the homogenous transformation from frame $n$ to frame $1$ as the product of the homogenous transformations between each consecutive frame:
+
+\begin{equation}
+    \label{eq:theory_homogenous_transformation_chain}
+    \mathbf{H}_n^1 = \mathbf{H}_2^1 \mathbf{H}_3^2 \cdots \mathbf{H}_n^{n-1}.
+\end{equation}
+
+Given a point $\mathbf{p}_n$ in frame $n$, we can express it in frame $1$ as:
+
+\begin{equation}
+    \label{eq:theory_homogenous_transformation_chain_application}
+    \mathbf{p}_1 = \begin{bmatrix}
+        p_x^1 \\
+        p_y^1 \\
+        1
+    \end{bmatrix} = \mathbf{H}_2^1 \mathbf{H}_3^2 \cdots \mathbf{H}_n^{n-1} \mathbf{p}_n = \mathbf{H}_n^1 \mathbf{p}_n.
+\end{equation}
+
 \section{Control}%
 \label{sec:theory_control}
 
@@ -105,3 +166,78 @@ A system is said to be \textit{controllable} if it is possible to drive the stat
 \end{equation}
 
 If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, then the system is controllable.
+
+\subsection{MRAC}%
+\label{subsec:theory_control_mrac}
+
+\textit{Model Reference Adaptive Control} (MRAC) is a control strategy that aims to make the output of a system follow the output of a reference model, even in the presence of uncertainties or disturbances. The following definition of MRAC is based on [\textbf{Cite Robust Adaptive Control book, 6.2.3}].
+
+Given the nth order LTI-system in state-space form,
+
+\begin{equation}
+    \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = \mathbf{A}\mathbf{x}(t) + \mathbf{B}\mathbf{u}(t), \quad \mathbf{x}(t) \in \mathbb{R}^n, \mathbf{u}(t) \in \mathbb{R}^m,
+\end{equation}
+
+and the reference model,
+
+\begin{equation}
+    \label{eq:theory_control_reference_model}
+    \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}_m(t) = \mathbf{A}_m\mathbf{x}_m(t) + \mathbf{B}_m\mathbf{r}(t), \quad \mathbf{x}_m(t) \in \mathbb{R}^n, \mathbf{r}(t) \in \mathbb{R}^m.
+\end{equation}
+
+The reference model and input $\mathrm{r}(t)$ are chosen so that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
+
+\begin{equation}
+    \label{eq:theory_control_ideal_mrac_input}
+    \mathbf{u}(t) = -\mathbf{K^*}\mathbf{x}(t) + \mathbf{L^*}\mathbf{r}(t),
+    \quad \mathbf{K^*} \in \mathbb{R}^{m \times n}, \mathbf{L^*} \in \mathbb{R}^{m \times m}.
+\end{equation}
+
+This obtains the closed loop system:
+
+\begin{equation}
+    \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = (\mathbf{A} - \mathbf{B}\mathbf{K^*})\mathbf{x}(t) + \mathbf{B}\mathbf{L^*}\mathbf{r}(t).
+\end{equation}
+
+If we choose $\mathbf{K^*}$ and $\mathbf{L^*}$ such that,
+
+\begin{equation}
+    \mathbf{A} - \mathbf{B}\mathbf{K^*} = \mathbf{A}_m, \quad \quad \mathbf{B}\mathbf{L^*} = \mathbf{B}_m,
+\end{equation}
+
+then the closed loop system becomes:
+
+\begin{equation}
+    \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = \mathbf{A}_m\mathbf{x}(t) + \mathbf{B}_m\mathbf{r}(t).
+\end{equation}
+
+Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same to \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. But for most cases, $\mathbf{A}$ and $\mathbf{B}$ are not known, which means that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
+
+\begin{equation}
+    \label{eq:theory_control_mrac_input}
+    \mathbf{u}(t) = -\mathbf{K}(t)\mathbf{x}(t) + \mathbf{L}(t)\mathbf{r}(t),
+    \quad \mathbf{K}(t) \in \mathbb{R}^{m \times n}, \mathbf{L}(t) \in \mathbb{R}^{m \times m}.
+\end{equation}
+
+\subsubsection*{Adaptive Law}
+
+Defining the tracking error $\mathbf{e}(t)$ as:
+
+\begin{equation}
+    \mathbf{e}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
+\end{equation}
+
+Solving for $\mathbf{P}$ for a $\mathbf{Q} =\mathbf{Q}^T > 0$ in the Lyapunov equation:
+
+\begin{equation}
+    \mathbf{A}_m^T\mathbf{P} + \mathbf{P}\mathbf{A}_m = -\mathbf{Q},
+\end{equation}
+
+we have the adaptive law:
+
+\begin{equation}
+    \begin{aligned}
+        \dot{\mathbf{K}}(t) &= \mathbf{B}_m^T \mathbf{P} \mathbf{e} \mathbf{x}^T sgn(l), \\
+        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^T \mathbf{P} \mathbf{e} \mathbf{r}^T sgn(l).
+    \end{aligned}
+\end{equation}
