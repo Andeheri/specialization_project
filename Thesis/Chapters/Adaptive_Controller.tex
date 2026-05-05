@@ -1,5 +1,38 @@
-\chapter{Adaptive Controller}%
-\label{ch:adaptive_controller}
+\chapter{Controller design}%
+\label{ch:controller_design}
+
+\section{Current controller}
+
+To help fascilitate the design of the position controller, we will first design a controller to control the armature current $I_a$ with the armature voltage $E_a$. This will allow us to treat the armature current as a control input in the position control design, simplifying the dynamics significantly. The current controller will be designed as a PI controller with a feedforward term. Let's first consider the electrical dynamics of the motor from \cref{eq:motor_model_electrical_rewrite}:
+
+\begin{equation}
+    \label{eq:controller_design_electrical_dynamics}
+    L_a \frac{\mathrm{d}I_a}{\mathrm{d}t} + R_a I_a + K_b \frac{\mathrm{d}\theta}{\mathrm{d}t}= E_a.
+\end{equation}
+
+Given the time varying reference current $r(t)$, we can design the input voltage $E_a(t)$ as:
+
+\begin{equation}
+    \label{eq:controller_design_voltage_input}
+    E_a(t) = \underbrace{K_b \frac{\mathrm{d}\theta(t)}{\mathrm{d}t} + R_a I_a(t)}_{\text{Feedforward term}} + \underbrace{L_a \left[ K_p \left(r(t) - I_a(t)\right) + K_i \int_0^t \left(r(\tau) - I_a(\tau)\right) \, d\tau \right]}_{\text{PI controller}}.
+\end{equation}
+
+Substituting \cref{eq:controller_design_voltage_input} into \cref{eq:controller_design_electrical_dynamics}, we get:
+
+\begin{equation}
+    \label{eq:controller_design_current_dynamics}
+    \frac{\mathrm{d}I_a}{\mathrm{d}t} = K_p (r(t) - I_a(t)) + K_i \int_0^t (r(\tau) - I_a(\tau)) \, d\tau.
+\end{equation}
+
+Transforming \cref{eq:controller_design_current_dynamics} to the Laplace domain, we get:
+
+\begin{equation}
+    \label{eq:controller_design_current_dynamics_laplace}
+    \frac{I_a(s)}{r(s)} = \frac{K_p s + K_i}{s^2 + K_p s + K_i}.
+\end{equation}
+
+\textbf{TODO: Compare denominator to the standard second-order system, and provide example values, and plot the current control with noise.}
+
 
 \section{Controllability of the system}%
 \label{sec:controllability}

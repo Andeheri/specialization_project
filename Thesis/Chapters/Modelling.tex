@@ -386,12 +386,12 @@ Further, at no-load speed, we have $\tau_l \equiv 0$, and $\frac{\mathrm{d}^2\th
     \end{tabular}
 \end{table}
 
-Sadly it's not possible to estimate the inertia of the rotor $J_m$, nor the armature inductance $L_a$ from the datasheet. For simulation purposes, we will define $J_m=\SI{0.093}{\kilo \gram \meter^2}$ and $L_a=\SI{6}{\milli\henry}$, which were given as common values brushed DC motors in [\textbf{Cite to article describing Brushed DC Motor}]. Even though we don't know the values now, they can be estimated on the actual motor through a calibration step later. There are many ways to do this. One way that's probably a bit overkill, but that I think will be the most convenient, is to use a parameter identification method. 
+Sadly it's not possible to estimate the inertia of the rotor $J_m$, nor the armature inductance $L_a$ from the datasheet. For simulation purposes, we will define $J_m=\SI{0.093}{\kilo \gram \meter^2}$ and $L_a=\SI{6}{\milli\henry}$, which were given as common values for brushed DC motors in [\textbf{Cite to article describing Brushed DC Motor}]. Even though we don't know the values now, they can be estimated using the actual motor through a calibration step later. There are many ways to do this. One way that's probably a bit overkill, but that I think will be the most convenient, is to use a parameter identification method. 
 
-\subsection{Estimating the armature inductance}%
+\subsection{Estimating the armature inductance and rotor inertia}%
 \label{subsec:est_armature_inductance}
 
-To estimate the armature inductance, we can use a parameter identification method. We'll start by converting \cref{eq:motor_model_electrical_rewrite} to the Laplace domain, giving us:
+To estimate the armature inductance and rotor inertia, we can use a parameter identification method. We'll start by converting \cref{eq:motor_model_electrical_rewrite} to the Laplace domain, giving us:
 
 \begin{equation}
     \label{eq:motor_model_electrical_laplace}
@@ -415,27 +415,104 @@ Ordering it around, moving all measured signals and known parameters to the left
 
 \begin{equation}
     \label{eq:motor_model_electrical_filtered}
-    \underbrace{\frac{1}{\Lambda_{I_a}(s)} [E_a(s)] - \frac{1}{\Lambda_{I_a}(s)} [R_a I_a(s)] - \frac{s}{\Lambda_{I_a}(s)} [K_b \theta(s)]}_{\textstyle z} = \underbrace{\frac{s}{\Lambda_{I_a}(s)} [I_a(s)]}_{\textstyle \Phi} \underbrace{L_a}_{\textstyle \theta^*}
+    \underbrace{\frac{1}{\Lambda_{I_a}(s)} [E_a(s)] - \frac{1}{\Lambda_{I_a}(s)} [R_a I_a(s)] - \frac{s}{\Lambda_{I_a}(s)} [K_b \theta(s)]}_{\textstyle z_{\jnt{L_a}}} = \underbrace{\frac{s}{\Lambda_{I_a}(s)} [I_a(s)]}_{\textstyle \Phi_{\jnt{L_a}}} \underbrace{L_a}_{\textstyle \theta^*_{\jnt{L_a}}}
 \end{equation}
 \begin{equation*}
-    \implies z = \theta^* \Phi.
+    \implies z_{\jnt{L_a}} = \theta^*_{\jnt{L_a}} \Phi_{\jnt{L_a}}.
 \end{equation*}
 
-Hence we've transformed the system to a SPM like discussed in [\textbf{Add reference to Theory:SPM}]. Using the gradient method developed in \textbf{[Add reference to Theory: Gradient method]}, with $\lambda_0 = 10$, $\Gamma = 10$, and $\theta_0=\hat{L_a}_0=\SI{1}{\milli\henry}$, while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{10}{\milli\second}$, the resulting estimate of $\hat{L}_a(t)$ is shown in \cref{fig:est_armature_inductance}. It is clear that the estimate converges exponentially fast to the true value. Since this is a static parameter that only needs to be estimated once, $L_a$ will be assumed known for the further controller design.
+Hence we've transformed the system to a SPM like discussed in [\textbf{Add reference to Theory:SPM}]. We can do the same for the inertia of the rotor $J_m$. We'll start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
 
-\textbf{TODO: Add the same for the inertia of the rotor.}
+\begin{equation}
+    \label{eq:motor_model_mechanical_laplace}
+    (J_m s^2 + B_m s) \theta(s) = K_t I_a(s).
+\end{equation}
+
+Since we're only measuring $\theta(t)$ and not its derivatives, we have to apply a proper filter of order $2$, defined as:
+
+\begin{equation}
+    \label{eq:filter_angle}
+    \Lambda_{\theta}(s) = s^2 + \lambda_1 s + \lambda_0, \quad \lambda_0, \lambda_1 > 0.
+\end{equation}
+
+Applying the filter to \cref{eq:motor_model_mechanical_laplace}, moving all measured signals and known parameters to the left, and all factors with the unkown parameter $J_m$ to the right, we get:
+
+\begin{equation}
+    \label{eq:motor_model_mechanical_filtered}
+     \underbrace{\frac{1}{\Lambda_{\theta}(s)} [K_t I_a(s)] - \frac{s}{\Lambda_{\theta}(s)} [B_m \theta(s)]}_{\textstyle z_{\jnt{J_m}}} = \underbrace{\frac{s^2}{\Lambda_{\theta}(s)} [\theta(s)]}_{\textstyle \Phi_{\jnt{J_m}}} \underbrace{J_m}_{\textstyle \theta^*_{\jnt{J_m}}}.
+\end{equation}
+
+\begin{equation*}
+    \implies z_{\jnt{J_m}} = \theta^*_{\jnt{J_m}} \Phi_{\jnt{J_m}}.
+\end{equation*}
+
+Combining \cref{eq:motor_model_electrical_filtered} and \cref{eq:motor_model_mechanical_filtered}, we can express them both in SPM form as:
+
+\begin{equation}
+    \label{eq:modelling_SPM_combined}
+    \underbrace{
+    \begin{bmatrix}
+        z_{\jnt{L_a}} \\
+        z_{\jnt{J_m}}
+    \end{bmatrix}}_{\textstyle \mathbf{z}} =
+    \underbrace{
+    \begin{bmatrix}
+        L_a & J_m
+    \end{bmatrix}}_{\textstyle {\boldsymbol{\theta}^*}^\intercal}
+    \underbrace{
+    \begin{bmatrix}
+        \Phi_{\jnt{L_a}} \\
+        \Phi_{\jnt{J_m}}
+    \end{bmatrix}}_{\textstyle \boldsymbol{\Phi}}.
+\end{equation}
+
+\begin{equation*}
+    \Longrightarrow \quad \mathbf{z} = {\boldsymbol{\theta}^*}^\intercal \boldsymbol{\Phi}.
+\end{equation*}
+
+
+Using the gradient method developed in \textbf{[Add reference to Theory: Gradient method]}, with 
+
+\begin{equation*}
+    \lambda_{0, L_a} = 10, \quad \lambda_{0, J_m} = 0.1, \quad \lambda_{1, J_m} = 0.1,\quad \boldsymbol{\Gamma} = \begin{bmatrix}
+    10 & 0 \\
+    0 & 1000
+\end{bmatrix},
+\end{equation*}
+
+\begin{equation*}
+    \boldsymbol{\hat{\theta}_0}=
+    \begin{bmatrix}
+        \hat{L_a}(0) \\
+        \hat{J_m}(0)
+    \end{bmatrix}
+    =\begin{bmatrix}
+        \SI{1}{\milli\henry} \\
+        \SI{0.01}{\kilogram\meter\squared}
+    \end{bmatrix}, \quad \boldsymbol{\theta}^* =
+    \begin{bmatrix}
+        L_a \\
+        J_m
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \SI{6}{\milli\henry} \\
+        \SI{0.093}{\kilogram\meter\squared}
+    \end{bmatrix},
+\end{equation*}
+
+while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second}$, the resulting estimates of $\hat{L}_a(t)$ and $\hat{J}_m(t)$ are shown in \cref{fig:est_armature_inductance}. It is clear that the estimates converge exponentially fast to the true values. Since these are static parameters that only needs to be estimated once, $L_a$ and $J_m$ will be assumed known for further controller design.
 
 \begin{figure}%
     \label{fig:est_armature_inductance}
     \centering
-    \includegraphics[width=0.8\textwidth]{../Figures/Adaptive_Controller/inductance_estimator_results.png}
-    \caption{Parameter identification of the armature inductance $L_a$ using a step input in the armature voltage $E_a$.}
+    \includegraphics[width=0.8\textwidth]{../Figures/Modelling/inertia_and_inductance_estimator_gradient_results.png}
+    \caption{Parameter identification of the armature inductance $L_a$ and rotor inertia $J_m$ using a step input in the armature voltage $E_a$.}
 \end{figure}
 
 \subsection{Mass-spring-damper load}%
 \label{subsec:mass_spring_model}
 
-In [\textbf{Reference to finger model}] we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, the full model isn't observable, and can't be used for control design. Instead, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. Hence we'll model the load torque $\tau_l$ as:
+In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, the full model isn't observable, and can't be used for control design. Instead, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
 
 \begin{equation}
     \tau_l = J \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + c \frac{\mathrm{d}\theta}{\mathrm{d}t} + k (\theta - \theta_{eq}),
