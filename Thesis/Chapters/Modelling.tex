@@ -4,7 +4,7 @@
 \section{Finger model}%
 \label{sec:finger_model}
 
-For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in [\textbf{Reference to theory:planar manipulator}]. The MCP joint doesn't have the same support-structure, so it's free to move side to side, but this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger is minimal.
+For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint doesn't have the same support-structure, so it's free to move side to side, but this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger is minimal.
 
 For our model, we assume that the finger is composed of three links, with three revolute joints, like a \textit{planar manipulator} (\textbf{Reference to theory:planar manipulator}). To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{fig:modelling_parameters}.
 
@@ -386,7 +386,7 @@ Further, at no-load speed, we have $\tau_l \equiv 0$, and $\frac{\mathrm{d}^2\th
     \end{tabular}
 \end{table}
 
-Sadly it's not possible to estimate the inertia of the rotor $J_m$, nor the armature inductance $L_a$ from the datasheet. For simulation purposes, we will define $J_m=\SI{0.093}{\kilo \gram \meter^2}$ and $L_a=\SI{6}{\milli\henry}$, which were given as common values for brushed DC motors in [\textbf{Cite to article describing Brushed DC Motor}]. Even though we don't know the values now, they can be estimated using the actual motor through a calibration step later. There are many ways to do this. One way that's probably a bit overkill, but that I think will be the most convenient, is to use a parameter identification method. 
+Sadly it's not possible to estimate the inertia of the rotor $J_m$, nor the armature inductance $L_a$ from the datasheet. For simulation purposes, the parameters are chosen as $J_m=\SI{0.093}{\kilogram \metre\squared}$ and $L_a=\SI{6}{\milli\henry}$, reported as example brushed DC motor values by \textcite{rahmanMathematicalModelBrushed2021}. Even though the values are currently unkown, they can be estimated through a calibration step later. One way that's possibly the most convenient, is to use a parameter identification method. 
 
 \subsection{Estimating the armature inductance and rotor inertia}%
 \label{subsec:est_armature_inductance}
@@ -505,7 +505,7 @@ while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second
 \begin{figure}%
     \label{fig:est_armature_inductance}
     \centering
-    \includegraphics[width=0.8\textwidth]{../Figures/Modelling/inertia_and_inductance_estimator_gradient_results.png}
+    \includegraphics[width=0.8\textwidth]{../Figures/Modelling/inertia_and_inductance_estimator_gradient_results.pdf}
     \caption{Parameter identification of the armature inductance $L_a$ and rotor inertia $J_m$ using a step input in the armature voltage $E_a$.}
 \end{figure}
 

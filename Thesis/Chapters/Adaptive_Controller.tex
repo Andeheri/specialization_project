@@ -3,7 +3,7 @@
 
 \section{Current controller}
 
-To help fascilitate the design of the position controller, we will first design a controller to control the armature current $I_a$ with the armature voltage $E_a$. This will allow us to treat the armature current as a control input in the position control design, simplifying the dynamics significantly. The current controller will be designed as a PI controller with a feedforward term. Let's first consider the electrical dynamics of the motor from \cref{eq:motor_model_electrical_rewrite}:
+To help fascilitate the design of the position and torque controllers, we will first design a controller for the armature current $I_a$ with the armature voltage $E_a$. This will allow us to treat the armature current as a control input in the position control design, simplifying the dynamics significantly. As the dynamics of the armature current is so fast, the controller has to be as cheap as possible to compute. Hence, it will be designed as a simple P controller, but with a feedforward term to account for the back EMF. Let's first consider the electrical dynamics of the motor from \cref{eq:motor_model_electrical_rewrite}:
 
 \begin{equation}
     \label{eq:controller_design_electrical_dynamics}
@@ -14,24 +14,120 @@ Given the time varying reference current $r(t)$, we can design the input voltage
 
 \begin{equation}
     \label{eq:controller_design_voltage_input}
-    E_a(t) = \underbrace{K_b \frac{\mathrm{d}\theta(t)}{\mathrm{d}t} + R_a I_a(t)}_{\text{Feedforward term}} + \underbrace{L_a \left[ K_p \left(r(t) - I_a(t)\right) + K_i \int_0^t \left(r(\tau) - I_a(\tau)\right) \, d\tau \right]}_{\text{PI controller}}.
+    E_a(t) = \underbrace{K_b \frac{\mathrm{d}\theta(t)}{\mathrm{d}t}}_{\text{Feedforward term}} + \;\underbrace{L_a K_p \left(r(t) - I_a(t)\right)}_{\text{P controller}}.
 \end{equation}
 
 Substituting \cref{eq:controller_design_voltage_input} into \cref{eq:controller_design_electrical_dynamics}, we get:
 
 \begin{equation}
     \label{eq:controller_design_current_dynamics}
-    \frac{\mathrm{d}I_a}{\mathrm{d}t} = K_p (r(t) - I_a(t)) + K_i \int_0^t (r(\tau) - I_a(\tau)) \, d\tau.
+    \frac{\mathrm{d}I_a(t)}{\mathrm{d}t} + R_a I_a(t) = K_p (r(t) - I_a(t)) \triangleq u(t).
 \end{equation}
 
-Transforming \cref{eq:controller_design_current_dynamics} to the Laplace domain, we get:
+This controller is supposed to be ran in real time on a microcontroller. That way it won't have access to continuous time signals, but rather discrete time signals. Hence, we will need to discretize the controller for stability analysis and tuning. For this analysis we will assume that the dynamics of the motor are slow enough such that the feedforward term can be treated as a constant. This is a reasonable assumption since the feedforward term is based on the angular velocity, which changes relatively slowly compared to the armature current.
+
+\subsubsection{Discretization of current controller}
+Suppose the controller is ran update period of $T_s$. Assuming that the input voltage $E_a$ is held constant between sampling times, i.e.,
 
 \begin{equation}
-    \label{eq:controller_design_current_dynamics_laplace}
-    \frac{I_a(s)}{r(s)} = \frac{K_p s + K_i}{s^2 + K_p s + K_i}.
+    \label{eq:controller_design_discretized_input}
+    u(t)=u[k] = K_p (r[k] - I_a[k]), \quad k T_s \leq t < (k+1)T_s,
 \end{equation}
 
-\textbf{TODO: Compare denominator to the standard second-order system, and provide example values, and plot the current control with noise.}
+the dynamics in \cref{eq:controller_design_current_dynamics} then becomes:
+
+\begin{equation}
+    \label{eq:controller_design_current_interval_dynamics}
+    \frac{\mathrm{d}I_a(\tau)}{\mathrm{d}\tau} + R_a I_a(\tau) = u[k], \quad \tau = t - k T_s \in [0, T_s].
+\end{equation}
+
+To solve it, let's multiply by the integrating factor $e^{R_a \tau}$, which gives:
+
+\begin{equation}
+    \label{eq:controller_design_current_integrating_factor}
+    e^{R_a \tau} \left[\frac{\mathrm{d}I_a(\tau)}{\mathrm{d}\tau} + R_a I_a(\tau)\right] = u[k] e^{R_a \tau}.
+\end{equation}
+
+Notice how this can be rewritten as:
+
+\begin{equation}
+    \label{eq:controller_design_current_integrating_factor_rewrite}
+    \frac{\mathrm{d}}{\mathrm{d}\tau} \left(e^{R_a \tau} I_a(\tau)\right) = u[k] e^{R_a \tau}.
+\end{equation}
+
+Integrating both sides of \cref{eq:controller_design_current_integrating_factor_rewrite} with respect to $\tau$, over the entire interval from $0$ to $T_s$, we get the discretized dynamics of the current controller:
+
+\begin{equation}
+    \label{eq:controller_design_discretized}
+    \begin{aligned}
+        [e^{R_a \tau} I_a(\tau)]_{\tau = 0}^{\tau = T_s} &= u[k] \int_0^{T_s} e^{R_a \tau} \mathrm{d}\tau,\\
+        \implies e^{R_a T_s} \underbrace{I_a(T_s)}_{I_a[k+1]} - \underbrace{I_a(0)}_{I_a[k]} &= u[k] \frac{e^{R_a T_s} - 1}{R_a},\\
+        \implies I_a[k+1] &= \underbrace{e^{-R_a T_s}}_{\triangleq a} I_a[k] + u[k] \underbrace{\frac{1 - e^{-R_a T_s}}{R_a}}_{\triangleq b},\\
+        \implies I_a[k+1] &= a I_a[k] + b u[k].
+    \end{aligned}
+\end{equation}
+
+Substituting in $u[k]$ from \cref{eq:controller_design_discretized_input}, we get:
+
+\begin{equation}
+    \label{eq:controller_design_discretized_reference}
+    \begin{aligned}
+        I_a[k+1] &= a I_a[k] + b K_p (r[k] - I_a[k]),\\
+        \implies I_a[k+1] &= \left(a - b K_p\right) I_a[k] + b K_p r[k].
+    \end{aligned}
+\end{equation}
+
+
+
+\subsubsection{Stability analysis and tuning of controller}
+
+To guarantee stability of the current controller, we can look at the z-transform of the system. Taking the z-transform of \cref{eq:controller_design_discretized_reference}, disregarding any initial conditions, we get:
+
+\begin{equation}
+    \label{eq:controller_design_current_dynamics_z_transform}
+    \begin{aligned}
+        \left[z - (a - b K_p)\right] I_a(z) &= b K_p r(z),\\
+        \implies \frac{I_a(z)}{r(z)} &= \frac{b K_p}{z - (a - b K_p)}.
+    \end{aligned}
+\end{equation}
+
+Clearly, \cref{eq:controller_design_current_dynamics_z_transform} has a pole at $z = a - b K_p$. As discussed in [\textbf{ADD REFERENCE TO THEORY: DISCRETIZED SYSTEMS}], for the system to be stable, we need the pole to be inside the unit circle. In other words, we need:
+
+\begin{equation}
+    \label{eq:controller_design_current_stability_condition}
+    \begin{aligned}
+        |a - b K_p| &< 1 \implies \left|e^{-R_a T_s} - K_p \frac{1 - e^{-R_a T_s}}{R_a}\right| < 1,\\
+        \implies K_p &< R_a \frac{1 + e^{-R_a T_s}}{1 - e^{-R_a T_s}} \triangleq K_{p,\text{max}}.
+    \end{aligned}
+\end{equation}
+
+One downside to using a P controller is that there will be a steady-state error. To eliminate this, we can artifically give the controller a higher reference current. To do this we will need to know the steady-state value of the current for a given reference. Assuming we apply a step reference of $r[k] = r_0$ for all $k \geq 0$. Provided we choose a $K_p$ that fulfills \cref{eq:controller_design_current_stability_condition}, the recursion will converge, and as we let $t \to \infty \implies k \to \infty$, \cref{eq:controller_design_discretized_reference} becomes:
+
+\begin{equation}
+    \label{eq:controller_design_current_steady_state}
+    \begin{aligned}
+        I_a[\infty] &= (a - b K_p) I_a[\infty] + b K_p r_0,\\
+        \implies I_a[\infty] &= r_0 \frac{b K_p}{1 - a + b K_p} = r_0 \frac{\frac{1 - a}{R_a} K_p}{1 - a + \frac{1 - a}{R_a} K_p} = r_0 \frac{K_p}{R_a + K_p}.
+    \end{aligned}
+\end{equation}
+
+Hence to eliminate the steady-state error, we can choose the reference to be:
+\begin{equation}
+    \label{eq:controller_design_current_reference_tuning}
+        r_1 = \frac{R_a + K_p}{K_p} r_0 \implies I_a[\infty] = r_1 \frac{K_p}{R_a + K_p} = r_0.
+\end{equation}
+
+To evaluate the controller, \cref{fig:controller_design_current_controller_simulation} shows a simulation of the P+FF controller. Here, $K_p=0.5K_{p,\text{max}}$ and $T_s = \SI{0.2}{\milli\second}$. The reference current is a step input of $3$ A, where the motor is initially spinning at $\SI{5}{\radian\per\second}$, causing a back-EMF which is accounted for by the feedforward term. There is a saturation put on $E_a=\pm\SI{12}{\volt}$. 
+
+As can clearly be seen in \cref{fig:controller_design_current_controller_simulation}, the controller is able to track the reference current well. The feedforward term allows the controller to account for the back-EMF, which is especially important during startup when the motor is spinning at a high speed but the current is still low. Overall, the P+FF controller shows promising results for controlling the armature current in our system. Due to the saturation in the voltage of $E_a=\pm\SI{12}{\volt}$, there is a maximum rate of change for the current. During simulation it was found to be $\dot{I_a}_{\jnt{\text{max}}}\approx\SI{1.5}{\kilo\ampere\per\second}$, which is more or less instantaneous. Hence, we will treat the armature current as a control input for further control design.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../Figures/Adaptive_Controller/motor_current_control_feed_forward_P.pdf}
+    \caption{Simulation of the P+FF current controller with $T_s = \SI{0.2}{\milli\second}$.}
+    \label{fig:controller_design_current_controller_simulation}
+\end{figure}
+
 
 
 \section{Controllability of the system}%
