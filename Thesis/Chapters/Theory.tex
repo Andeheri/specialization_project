@@ -185,7 +185,7 @@ and the reference model,
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}_m(t) = \mathbf{A}_m\mathbf{x}_m(t) + \mathbf{B}_m\mathbf{r}(t), \quad \mathbf{x}_m(t) \in \mathbb{R}^n, \mathbf{r}(t) \in \mathbb{R}^m.
 \end{equation}
 
-The reference model and input $\mathrm{r}(t)$ are chosen so that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
+The reference model and input $\mathrm{r}(t)$ are chosen so that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix, and $(\mathbf{A}, \mathbf{B})$ must be \textit{controllable} for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
 
 \begin{equation}
     \label{eq:theory_control_ideal_mrac_input}

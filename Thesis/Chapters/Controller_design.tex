@@ -119,8 +119,9 @@ Hence to eliminate the steady-state error, we can choose the reference to be:
 \end{equation}
 
 \subsection{Simulation of current controller}
+\label{subsec:current_simulation}
 
-To evaluate the controller, we will simulate it applied to the motor model developed in \cref{sec:brushed_dc_motor_model}. Using $K_p=\frac{1}{2}K_{p,\text{max}}(T_s)$, where the reference current is a step input of $3$ A, and scaled with regards to \cref{eq:controller_design_current_reference_tuning}. Additionally there is a saturation put on $E_a=\pm\SI{12}{\volt}$. \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_speed} and \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed} shows a simulation of the P+FF controller aswell as just the P controller, with $T_s = \SI{0.2}{\milli\second}$, where the motor is initially spinning at $\omega_0 = \SI{5}{\radian\per\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$, respectively. \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms} shows the simulation of the P+FF controller with and without noise to the measurement of $I_a$, with $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$, respectively. The noise is a zero-mean Gaussian noise with a standard deviation of $\sigma_{\jnt{I_a}} = \SI{50}{\milli\ampere}$, which is higher than is expected for the system, but it will help us evaluate the robustness of the controller.
+To evaluate the controller, we will simulate it applied to the motor model developed in \cref{sec:brushed_dc_motor_model}. Using $K_p=\frac{1}{2}K_{p,\text{max}}(T_s)$, where the reference current is a step input of $1$ A, and scaled with regards to \cref{eq:controller_design_current_reference_tuning}. Additionally there is a saturation put on $E_a=\pm\SI{12}{\volt}$. \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_speed} and \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed} shows a simulation of the P+FF controller aswell as just the P controller, with $T_s = \SI{0.2}{\milli\second}$, where the motor is initially spinning at $\omega_0 = \SI{5}{\radian\per\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$, respectively. \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms} shows the simulation of the P+FF controller with and without noise to the measurement of $I_a$, with $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$, respectively. The noise is a zero-mean Gaussian noise with a standard deviation of $\sigma_{\jnt{I_a}} = \SI{50}{\milli\ampere}$, which is higher than is expected for the system, but it will help us evaluate the robustness of the controller.
 
 \begin{figure}[htbp]
     \centering
@@ -168,47 +169,78 @@ To evaluate the controller, we will simulate it applied to the motor model devel
 
 \subsection{Evaluation of controller}
 
-When the motor is starting from still, both the P+FF and P controllers are able to track the reference current well, as can be seen in \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed}. However, when the motor is already spinning at a high speed, the P controller struggles to track the reference current and gets a steady-state error, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_with_speed}. The P+FF controller on the other hand continues to perform well, as seen in \cref{fig:controller_design_current_controller_simulation_pff_with_speed}. This is because the back-EMF is significant at high speeds, and without the feedforward term, the P controller can't account for it. Realistically the motor won't be spinning at such high speeds most of the time. Therefore it might be tempting to remove the feedforward term. This could be a good idea for torque control, to simplify the controller, as described in [\textbf{ADD REFERENCE TO CONTROLLER DESIGN: TORQUE CONTROL}]. But for position control, I would advise against removing it, as the motor picks up speed in a relatively small amount of time. For robustness in general I would keep the feedforward term. 
+When the motor is starting from still, both the P+FF and P controllers are able to reach the target current fast. But as the motor picks up speed, the back-EMF becomes significant, and the P controller struggles to keep up, and the current starts to deviate from the reference current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_no_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_no_speed}. When the motor is already spinning at a high speeds, the differences between the two controllers becomes even more significant. At no point does the P controller reach its target current. In fact, it deviates more and more over time, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_with_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_with_speed}.
 
-\cref{fig:controller_design_current_controller_simulation_noise_1ms} and \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} shows that the P+FF controller is able to track the reference current well with noise present in the current measurements, and even with a slower update period of $T_s = \SI{1.0}{\milli\second}$. The noise causes some jitter in the current, but it doesn't cause any significant issues for tracking the reference current.
+As can be seen in \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms}, the added noise to the current measurtements doesn't really affect the stability of the controller. The current oscillates slightly when there's noise present, compared the the noise-free. There is however a clear differewnce between longer and shorter update periods. With a longer update period of $T_s = \SI{1.0}{\milli\second}$, the current gets a slight steady-state-error, which is not present with the shorter update period of $T_s = \SI{0.2}{\milli\second}$. The reason for this is that the assumption of a constant speed between updates is less valid with a longer update period, which causes the feedforward term to be less accurate, which in turn causes the steady-state error. With a shorter update period, the assumption of a constant speed is more valid, which allows the feedforward term to be more accurate, which in turn allows the controller to track the reference current better. 
 
-Overall, the P+FF and P controllers show promising results for controlling the armature current in our system. Due to the saturation in the voltage of $E_a=\pm\SI{12}{\volt}$, there is a maximum rate of change for the current. During simulation it was found to be $\dot{I_a}_{\jnt{\text{max}}}\approx\SI{2.0}{\kilo\ampere\per\second}$, when the motor was starting from still, which is more or less instantaneous seen from the dynamics of the mechanical system. Hence, we will treat the armature current as a control input for further control design.
+Overall, the P+FF controller shows promising results for controlling the armature current in our system. Due to the saturation in the voltage of $E_a=\pm\SI{12}{\volt}$, there is a maximum rate of change for the current. During simulation it was found to be $\dot{I_a}_{\jnt{\text{max}}}\approx\SI{2.0}{\kilo\ampere\per\second}$, when the motor was starting from still, which is more or less instantaneous seen from the dynamics of the mechanical system. Hence, we will treat the armature current as a control input for further control design.
 
 \section{Torque control}
 \label{sec:controller_design_torque_control}
 
-When the hand interracts with objects, trying to control the position of the hand becomes irrelevant, as the hand will be constrained by the object. Instead, we want to control the torque generated by the motor, which will allow us to control the force applied to the object.
+When the hand interracts with objects, trying to control the position of the hand becomes irrelevant, as the hand will be constrained by the object. Instead, we want to control the torque generated by the motor, which in turn will allow us to control the force applied to the object.
 
-As mentioned in \cref{sec:brushed_dc_motor_model}, the torque generated by the motor is proportional to the armature current:
+
+When grasping an object, assuming the object is rigid and that the cable is inelastic, the angular velocity and acceleration of the motor will be $\frac{\mathrm{d}\theta}{\mathrm{d}t} \equiv 0$ and $\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} \equiv 0$, respectively. Based on \cref{eq:motor_model_mechanical_rewrite}, this results in the following relation:
 
 \begin{equation}
-    \label{eq:controller_design_torque_current_relation}
-    \tau_m = K_t I_a.
+    \tau_m = K_t I_a = \tau_l.
 \end{equation}
 
-In \cref{sec:controller_design_current_controller}, we designed a controller for the armature current $I_a$ with the armature voltage $E_a$, and concluded that we can treat the armature current as a control input for further control design. Hence, we can directly control the torque by controlling the armature current. For a given reference torque $r_{\jnt{\tau_m}}$, we can calculate the reference current $r_{\jnt{I_a}}$ as:
+Hence, all the torque generated by the motor, which is proportional to the current, would be applied to the load. This means the applied torque can be controlled directly through the current. In \cref{sec:controller_design_current_controller} we designed a controller for the armature current $I_a$ through the input armature voltage $E_a$. With $\frac{\mathrm{d}\theta}{\mathrm{d}t} \equiv 0$, the back-EMF will be $K_b \frac{\mathrm{d}\theta}{\mathrm{d}t} \equiv 0$. Therefore we can also simplify the current controller in \cref{eq:controller_design_voltage_input} to just a P controller, as there is no back-EMF to account for. This will reduce the computational load on the microcontroller. For a given reference torque $r_{\jnt{\tau_m}}$, we can calculate the reference current $r_{\jnt{I_a}}$ as:
 
 \begin{equation}
     \label{eq:controller_design_torque_control_reference}
     r_{\jnt{I_a}} = \frac{r_{\jnt{\tau_m}}}{K_t}.
 \end{equation}
 
-When gripping an object, assuming the object is rigid and that the cable is inelastic, the angular velocity of the motor will be zero. Hence, the back-EMF will be zero. Therefore we can simplify the controller in \cref{eq:controller_design_voltage_input} to just a P controller. This will reduce the computational load on the microcontroller, and might get us better control over the torque.
+If it's more convenient to control the force applied to the object instead of the torque, we can easily convert between the two using the relation $\tau_m = F_m r_{\jnt{spindle}}$, where $r_{\jnt{spindle}}$ is the radius of the spindle mounted on the motor. Hence, for a given reference force $r_{\jnt{F}}$, we can calculate the reference current $r_{\jnt{I_a}}$ as:
 
-\begin{figure}%
-    \label{fig:controller_design_torque_control_rigid_object}
+\begin{equation}
+    \label{eq:controller_design_force_control_reference}
+    r_{\jnt{I_a}} = r_{\jnt{F}} \frac{r_{\jnt{spindle}}}{K_t}.
+\end{equation}
+
+Figure \cref{fig:controller_design_torque_control_rigid_object} shows emulated scenarios of the finger grasping a rigid object, assuming no elasticity in the cable, and no friction between the motor and the finger. The motor is supplied with $\SI{3}{\volt}$ for the first $\SI{5}{\milli\second}$. Then at $t=\SI{5}{\milli\second}$, the finger makes contact with the object, and $\frac{\mathrm{d}\theta}{\mathrm{d}t} = \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} \equiv 0$. At the same time, the torque controller is activated, and the reference torque is set to $r_{\jnt{\tau_m}} = \SI{1.5}{\newton\meter}$. For the current controller, the proportional gain is set to $K_p = \frac{1}{2} K_{p, max}$, like in \cref{subsec:current_simulation}. \cref{fig:controller_design_torque_control_rigid_object_0.2ms} and \cref{fig:controller_design_torque_control_rigid_object_1.0ms} show the results for $T_s=\SI{0.2}{\milli\second}$ and $T_s=\SI{1.0}{\milli\second}$, respectively. As can be seen in the figures, the motor torque $\tau_m$ quickly converges to the reference torque $r_{\jnt{\tau_m}}$ for both cases.
+
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{../Figures/Controller_design/motor_torque_control_P_Ts_1.0ms.pdf}
+    \subcaptionbox{$T_s = \SI{0.2}{\milli\second}$.\label{fig:controller_design_torque_control_rigid_object_0.2ms}}{%
+        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_torque_control_P_Ts_0.2ms.pdf}}
+    \hfill
+    \subcaptionbox{$T_s = \SI{1.0}{\milli\second}$.\label{fig:controller_design_torque_control_rigid_object_1.0ms}}{%
+        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_torque_control_P_Ts_1.0ms.pdf}}
     \caption{Torque control with a P controller when gripping a rigid object.}
+    \label{fig:controller_design_torque_control_rigid_object}
 \end{figure}
 
-\section{Controllability of the system}%
-\label{sec:controllability}
+Ideally, if there was no friction between the motor and the finger, $\tau_l = \tau_{finger}$. In reality, because of the bowden tube the cable is running through, and other inconsistencies in the setup, there will be some friction. Therefore, we can expect $\tau_l = \tau_{finger} + \tau_{friction}$, where $\tau_{friction}$ is the torque lost to friction. Hence, without any direct measurement of the applied force to the finger, we would expect that the applied force to the finger will be less than the reference force. However, with integrated force sensors in the fingertip, this wouldn't be an issue. 
+
+\subsection{Force control with integrated fingertip force sensors}
+
+With integrated force sensors in the fingertip, we could use a cascade control approach. Since the motor torque and force are proportional to the armature current, we could then define the reference current $r_{\jnt{I_a}}$ as a PI controller with the reference force $r_{\jnt{F}}$ and the measured force $F_{meas}$ as input:
+
+\begin{equation}
+    \label{eq:controller_design_torque_control_reference_with_force_feedback}
+    r_{\jnt{I_a}}(t) = K_p (r_{\jnt{F}} - F_{meas}(t)) + K_i \int_{t_0}^t (r_{\jnt{F}} - F_{meas}(\tau)) \, d\tau.
+\end{equation}
+
+\textbf{TODO: Add tests for torque control with constant friction. Show with only measuring current, and with the force sensors.}
+
+\section{Model reference adaptive control (MRAC) for position control}%
+\label{sec:mrac_implementation}
+
+When the hand is not in contact with any objects, we want to control the position of the hand. However, due to the big differences in mass, stiffness and dampening in the hand between patients, it becomes difficult to design a controller that can guarantee good performance for all patients. To address this issue, we will implement a model reference adaptive control (MRAC) scheme, which will allow us to adapt the controller parameters online based on the observed behavior of the system. To be clear, this is mostly just to speed up the tuning process of the controller, and get good enough control for tests when frequently switching between patients. I would however reccommend to use a simpler control approach if the system is to be used several times by the same patient. This will be discussed in more detail in [\textbf{TODO: Add reference to chapter: discussion}].
+
+As discussed in \cref{subsec:mass_spring_model}, because of modelling uncertainties and the fact that we don't measure anything at the hand, the finger model from \cref{sec:finger_model} becomes unobservable. Therefore controlling the angles of the fingers directly becomes infeasible. Instead we will focus on controlling the position of the motor precisely. For this we will use the MRAC scheme introduced in \cref{subsec:theory_control_mrac}. It calls for the system to be controllable. Using the simplified model of the finger dynamics as a torsional mass-spring-damper system acting on the motor, from \cref{subsec:state_space_model_load}, we can check if the system is controllable.
+
+\subsection{Controllability of the system}%
+\label{subsec:controllability}
 Based on the state-space representation our system in \cref{subsec:state_space_model_load}, we can check if the system is controllable, as described in \cref{subsec:theory_control_controllability}. The controllability matrix $\mathcal{C}$ for our system is given by:
 
 \begin{equation}
     \label{eq:model_controllability}
-    \mathcal{C} = [\mathbf{B}, \mathbf{A}\mathbf{B}, \mathbf{A}^2\mathbf{B}].
+    \mathcal{C} = [\mathbf{B}, \mathbf{A}\mathbf{B}].
 \end{equation}
 
 Substituting for our specific $\mathbf{A}$ and $\mathbf{B}$, we get:
@@ -216,14 +248,104 @@ Substituting for our specific $\mathbf{A}$ and $\mathbf{B}$, we get:
 \begin{equation}
     \mathcal{C} = 
     \begin{bmatrix}
-        0 & 0 & \frac{K_t}{L_a (J_m+J)}\\
-        0 & \frac{K_t}{L_a (J_m+J)} & -\frac{K_t [L_a (B_m+c) + R_a (J_m+J)]}{L_a^2 (J_m+J)^2}\\
-        \frac{1}{L_a} & -\frac{R_a}{L_a^2} & -\frac{K_b K_t L_a+R_a^2 (J_m+J)}{L_a^3 (J_m+J)}
+        0 & \frac{K_t}{J_m+J}\\
+        \frac{K_t}{J_m+J} & -\frac{K_t (B_m+c)}{(J_m+J)^2}
     \end{bmatrix}.
 \end{equation}
 
-Clearly, $\mathrm{rank}(\mathcal{C}) = 3$, which is equal to the number of states. Therefore, the system is controllable.
+Clearly, $\mathrm{rank}(\mathcal{C}) = 2$, which is equal to the number of states. Therefore, the simplified system is controllable.
 
-\section{MRAC implementation}%
-\label{sec:mrac_implementation}
+\subsection{MRAC implementation}%
+\label{subsec:controller_design_mrac_implementation}
 
+The MRAC scheme that will be implemented is based on \cref{subsec:theory_control_mrac}. In our physical model of the system, we will use the finger model developed in \cref{sec:finger_model}, connected to the brushed DC motor as a load, through a cable connected to a whiffle tree to spread the force to all three phalanges. From the motor side, the dynamics can be described through the state-space representation:
+
+\begin{equation}
+    \label{eq:controller_design_mrac_system_dynamics}
+    \begin{aligned}
+        \underbrace{
+        \frac{\mathrm{d}}{\mathrm{d}t} \begin{bmatrix}
+            \theta\\
+            \omega
+        \end{bmatrix}}_{\dot{\mathbf{x}}} = \underbrace{\begin{bmatrix}
+            0 & 1 \\
+            0 & -\frac{B_m}{J_m}
+        \end{bmatrix}}_{\mathbf{A}}
+        \underbrace{
+        \begin{bmatrix}
+            \theta\\
+            \omega
+        \end{bmatrix}}_{\mathbf{x}} + \underbrace{\begin{bmatrix}
+            0 \\
+            \frac{K_t}{J_m}
+        \end{bmatrix}}_{\mathbf{B}} \underbrace{I_a}_{u} + \underbrace{\begin{bmatrix}
+            0 \\
+            \tau_l
+        \end{bmatrix}}_{\mathbf{d}},
+        \quad y(t) = \underbrace{\begin{bmatrix}
+            1 & 0
+        \end{bmatrix}}_{\mathbf{C}} \underbrace{\begin{bmatrix}
+            \theta\\
+            \omega
+        \end{bmatrix}}_{\mathbf{x}},
+    \end{aligned}
+\end{equation}
+
+where $\theta$ is the angle of the motor, $\omega$ is the angular velocity of the motor, $I_a$ is the armature current, and $\tau_l$ is the load torque applied to the motor by the finger. The output $y(t)$ is the angle of the motor, which we want to control. The MRAC scheme calls for a reference model, which the system should follow as closely as possible. Since our system is a second-order system, we will use a second-order reference model, in the standard form:
+
+\begin{equation}
+    \label{eq:controller_design_mrac_reference_model}
+    \underbrace{
+    \frac{\mathrm{d}}{\mathrm{d}t} \begin{bmatrix}
+        \theta_m\\
+        \omega_m
+    \end{bmatrix}}_{\dot{\mathbf{x}}_m} = \underbrace{\begin{bmatrix}
+        0 & 1 \\
+        -\omega_n^2 & -2 \zeta \omega_n
+    \end{bmatrix}}_{\mathbf{A}_m} \underbrace{\begin{bmatrix}
+        \theta_m\\
+        \omega_m
+    \end{bmatrix}}_{\mathbf{x}_m} + \underbrace{\begin{bmatrix}
+        0 \\
+        \omega_n^2
+    \end{bmatrix}}_{\mathbf{B}_m} r_{\theta},
+\end{equation}
+
+where $\omega_n$ is the natural frequency of the system, $\zeta$ is the damping ratio, and $r_{\theta}$ is the reference angle for the motor that we want the system to follow. The MRAC scheme requires that the reference model is stable. The eigenvalues of $\mathbf{A}_m$ in \cref{eq:controller_design_mrac_reference_model} are given by:
+
+\begin{equation}
+    \label{eq:controller_design_mrac_reference_model_eigenvalues}
+    \lambda = -\zeta \omega_n \pm \omega_n \sqrt{\zeta^2 - 1}.
+\end{equation}
+
+Therefore, as long as $\zeta, \omega_n > 0$, the reference model will be stable. Similarly to the torque controller, we'll use the current controller designed in \cref{sec:controller_design_current_controller} to control the armature current $I_a$, so that we can simply treat $I_a$ as the control input for the MRAC scheme. We can therefore define the reference current $r_{\jnt{I_a}}$ as:
+
+\begin{equation}
+    \label{eq:controller_design_mrac_reference_current}
+    r_{\jnt{I_a}}(t) = -\mathbf{K}^T(t) \mathbf{x}(t) + L(t) r_{\theta}(t),
+\end{equation}
+
+where $\mathbf{K}(t) \in \mathbb{R}^2$ and $L(t) \in \mathbb{R}$ are the adaptive parameters that will be updated online based on the observed behavior of the system. Defining the tracking error $\mathbf{e}(t)$ as:
+
+\begin{equation}
+    \mathbf{e}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
+\end{equation}
+
+Solving for $\mathbf{P}$ for a $\mathbf{Q} =\mathbf{Q}^T > 0$ in the Lyapunov equation:
+
+\begin{equation}
+    \mathbf{A}_m^T\mathbf{P} + \mathbf{P}\mathbf{A}_m = -\mathbf{Q},
+\end{equation}
+
+we can define the adaptive law as:
+
+\begin{equation}
+    \begin{aligned}
+        \dot{\mathbf{K}}(t) &= \boldsymbol{\Gamma}_K \mathbf{x} \mathbf{B}_m^T \mathbf{P} \mathbf{e}, \\
+        \dot{L}(t) &= - \gamma_L \mathbf{B}_m^T \mathbf{P} \mathbf{e} r_{\theta}(t),
+    \end{aligned}
+\end{equation}
+
+where $\boldsymbol{\Gamma}_K \in \mathbb{R}^{2 \times 2}$ and $\gamma_L \in \mathbb{R}$ are positive definite matrices that determine the adaptation rate of the parameters. 
+
+\subsection{Simulation of MRAC controller with finger dynamics}

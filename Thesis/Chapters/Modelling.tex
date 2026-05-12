@@ -512,32 +512,29 @@ while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second
 \subsection{Mass-spring-damper load}%
 \label{subsec:mass_spring_model}
 
-In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, the full model isn't observable, and can't be used for control design. Instead, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
+In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, in addition to that the configuration of the whiffle tree is unkown, the full finger model isn't observable, and can't be used for position control design. Instead, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
 
 \begin{equation}
     \tau_l = J \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + c \frac{\mathrm{d}\theta}{\mathrm{d}t} + k (\theta - \theta_{eq}),
 \end{equation}
 
-where $J$ is the total inertia of the finger, $c$ is the total damping coefficient of the finger, $k$ is the total stiffness of the finger, and $\theta_{eq}$ is the equilibrium angle of the finger. Substituting this into \cref{eq:motor_model_mechanical_rewrite}, we get the updated dynamics:
+where $J$ is the 'total' inertia of the finger, $c$ is the 'total' damping coefficient of the finger, $k$ is the 'total' stiffness of the finger, and $\theta_{eq}$ is a kind of equilibrium angle of the finger. Substituting this into \cref{eq:motor_model_mechanical_rewrite}, we get the updated mechanical dynamics:
 
-\begin{align}
+\begin{equation}
     \label{eq:motor_model_mechanical_load}
-    (J_m + J) \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + (B_m + c) \frac{\mathrm{d}\theta}{\mathrm{d}t} + k \theta &= K_t I_a + k \theta_{eq}\\
-    \label{eq:motor_model_electrical_load}
-    R_a I_a+L_a \frac{\mathrm{d} I_a}{\mathrm{d}t}+K_b \frac{\mathrm{d} \theta}{\mathrm{d}t} &= E_a.
-\end{align}
+    (J_m + J) \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + (B_m + c) \frac{\mathrm{d}\theta}{\mathrm{d}t} + k \theta = K_t I_a + k \theta_{eq}
+\end{equation}
 
 \subsection{State-space model of brushed DC motor with load}%
 \label{subsec:state_space_model_load}
 
-To design a controller for the system, we need to express the dynamics in state-space representation, shown in \cref{subsec:theory_control_state_space}. Defining $\omega\triangleq\frac{\mathrm{d}\theta}{\mathrm{d}t}$, we can rewrite the \cref{eq:motor_model_mechanical_load} and \cref{eq:motor_model_electrical_load} as:
+To analyze the position controller for the motor with load, discussed further in \cref{sec:mrac_implementation}, we need to express the dynamics in \cref{eq:motor_model_mechanical_load} in state-space representation, as shown in \cref{subsec:theory_control_state_space}. Assuming that $I_a$ can be treated as an input, explained in \cref{sec:controller_design_current_controller}, and defining $\omega\triangleq\frac{\mathrm{d}\theta}{\mathrm{d}t}$, we can rewrite the \cref{eq:motor_model_mechanical_load} and as:
 
-\begin{align*}
-    \frac{\mathrm{d}\omega}{\mathrm{d}t} &= \frac{1}{J_m + J} \left(K_t I_a - (B_m + c) \omega - k (\theta - \theta_{eq})\right)\\
-    \frac{\mathrm{d}I_a}{\mathrm{d}t} &= \frac{1}{L_a} (E_a - R_a I_a - K_b \omega).
-\end{align*}
+\begin{equation}
+    \frac{\mathrm{d}\omega}{\mathrm{d}t} = \frac{1}{J_m + J} \left(K_t I_a - (B_m + c) \omega - k (\theta - \theta_{eq})\right).
+\end{equation}
 
-Written more compactly, we have:
+Written in state-space form, we have:
 
 \begin{equation}
     \label{eq:state_space_model}
@@ -545,32 +542,27 @@ Written more compactly, we have:
     \frac{\mathrm{d}}{\mathrm{d}t}
     \begin{bmatrix}
         \theta\\
-        \omega\\
-        I_a
+        \omega
     \end{bmatrix}}_{\textstyle \frac{\mathrm{d}}{dt}\mathbf{x}} =
     \underbrace{
     \begin{bmatrix}
-        0 & 1 & 0\\
-        -\frac{k}{J_m + J} & -\frac{B_m + c}{J_m + J} & \frac{K_t}{J_m + J}\\
-        0 & -\frac{K_b}{L_a} & -\frac{R_a}{L_a}
+        0 & 1 \\
+        -\frac{k}{J_m + J} & -\frac{B_m + c}{J_m + J}
     \end{bmatrix}}_{\textstyle \mathbf{A}}
     \underbrace{
     \begin{bmatrix}
         \theta\\
-        \omega\\
-        I_a
+        \omega
     \end{bmatrix}}_{\textstyle \mathbf{x}} +
     \underbrace{
     \begin{bmatrix}
         0\\
-        0\\
-        \frac{1}{L_a}
-    \end{bmatrix}}_{\textstyle \mathbf{B}} \underbrace{E_a}_{\textstyle \mathbf{u}} + 
+        \frac{K_t}{J_m + J}
+    \end{bmatrix}}_{\textstyle \mathbf{B}} \underbrace{I_a}_{\textstyle \mathbf{u}} + 
     \underbrace{
     \begin{bmatrix}
         0\\
-        \frac{k \theta_{eq}}{J_m + J}\\
-        0
+        \frac{k \theta_{eq}}{J_m + J}
     \end{bmatrix}}_{\textstyle \mathbf{d}}
 \end{equation}
 
@@ -578,28 +570,24 @@ Written more compactly, we have:
     \implies \frac{\mathrm{d}}{\mathrm{d}t}\mathbf{x} = \mathbf{A}\mathbf{x} + \mathbf{B}\mathbf{u} + \mathbf{d}.
 \end{equation*}
 
-In addition we have an encoder measuring $\theta$, aswell as an ammeter measuring $I_a$. Hence the output of the system is given by:
+In addition we have an encoder measuring $\theta$. Hence the output of the system is given by:
 
 \begin{equation}
     \label{eq:output_equation}
+    \begin{aligned}
+        \underbrace{
+    \begin{bmatrix}
+        \theta
+    \end{bmatrix}}_{\textstyle \mathbf{y}} &=
     \underbrace{
     \begin{bmatrix}
-        \theta \\
-        I_a
-    \end{bmatrix}}_{\textstyle \mathbf{y}} =
-    \underbrace{
-    \begin{bmatrix}
-        1 & 0 & 0\\
-        0 & 0 & 1
+        1 & 0
     \end{bmatrix}}_{\textstyle \mathbf{C}}
     \underbrace{
     \begin{bmatrix}
         \theta \\
-        \omega \\
-        I_a
-    \end{bmatrix}}_{\textstyle \mathbf{x}}
+        \omega
+    \end{bmatrix}}_{\textstyle \mathbf{x}} \\
+    \implies \mathbf{y} &= \mathbf{C}\mathbf{x}.
+    \end{aligned}
 \end{equation}
-
-\begin{equation*}
-    \implies \mathbf{y} = \mathbf{C}\mathbf{x}.
-\end{equation*}
