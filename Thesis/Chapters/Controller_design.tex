@@ -130,7 +130,7 @@ To evaluate the controller, we will simulate it applied to the motor model devel
     \hfill
     \subcaptionbox{P controller.\label{fig:controller_design_current_controller_simulation_p_with_speed}}{%
         \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_Ts_0.2ms_with_speed.pdf}}
-    \caption{P+FF and P controllers with $T_s = \SI{0.2}{\milli\second}$ and $\omega_0 = \SI{5}{\radian\per\second}$.}
+    \caption{Armature current step response for discrete-time P+FF and P controllers tracking a $\SI{1}{\ampere}$ reference, with $T_s = \SI{0.2}{\milli\second}$ and initial motor speed $\omega_0 = \SI{5}{\radian\per\second}$.}
     \label{fig:controller_design_current_controller_simulation_P_vs_PFF_speed}
 \end{figure}
 
@@ -141,7 +141,7 @@ To evaluate the controller, we will simulate it applied to the motor model devel
     \hfill
     \subcaptionbox{P controller.\label{fig:controller_design_current_controller_simulation_p_no_speed}}{%
         \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_Ts_0.2ms.pdf}}
-    \caption{P+FF and P controllers with $T_s = \SI{0.2}{\milli\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$.}
+    \caption{Armature current step response for discrete-time P+FF and P controllers tracking a $\SI{1}{\ampere}$ reference, with $T_s = \SI{0.2}{\milli\second}$ and initial motor speed $\omega_0 = \SI{0}{\radian\per\second}$.}
     \label{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed}
 \end{figure}
 
@@ -152,7 +152,7 @@ To evaluate the controller, we will simulate it applied to the motor model devel
     \hfill
     \subcaptionbox{With noise.\label{fig:controller_design_current_controller_simulation_with_noise_0.2ms}}{%
         \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_noise_Ts_0.2ms.pdf}}
-    \caption{P+FF controller with and without noise, with $T_s = \SI{0.2}{\milli\second}$.}
+    \caption{Effect of current measurement noise on the armature current response using a discrete-time P+FF controller with $T_s = \SI{0.2}{\milli\second}$.}
     \label{fig:controller_design_current_controller_simulation_noise_0.2ms}
 \end{figure}
 
@@ -163,7 +163,7 @@ To evaluate the controller, we will simulate it applied to the motor model devel
     \hfill
     \subcaptionbox{With noise.\label{fig:controller_design_current_controller_simulation_with_noise_1ms}}{%
         \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_noise_Ts_1.0ms.pdf}}
-    \caption{P+FF controller with and without noise, with $T_s = \SI{1.0}{\milli\second}$.}
+    \caption{Effect of current measurement noise on the armature current response using a discrete-time P+FF controller with $T_s = \SI{1.0}{\milli\second}$.}
     \label{fig:controller_design_current_controller_simulation_noise_1ms}
 \end{figure}
 
@@ -349,3 +349,122 @@ we can define the adaptive law as:
 where $\boldsymbol{\Gamma}_K \in \mathbb{R}^{2 \times 2}$ and $\gamma_L \in \mathbb{R}$ are positive definite matrices that determine the adaptation rate of the parameters. 
 
 \subsection{Simulation of MRAC controller with finger dynamics}
+
+For the simulation of the position controller, we will simulate two motors with the dynamics from \cref{eq:controller_design_mrac_system_dynamics}. One for flexion and one for extension, as is the case in our physical system. The force the motors applies on each of their cables gets distributed to the three phalanges through their own whiffle tree, with $w_1 = \frac{1}{2}$ of the force going to the proximal phalanx, $w_2 = \frac{1}{3}$ of the force going to the middle phalanx, and $w_3 = \frac{1}{6}$ of the force going to the distal phalanx. The force application is shown in \cref{fig:controller_design_force_application}. 
+
+\subsection{Cable tension}
+
+To emulate the cable connecting the motor to the finger, the following constraint is added to the system:
+
+\begin{equation}
+    g(\theta, \mathbf{q}) \triangleq r_{spindle} \theta + L_{finger}(\mathbf{q}) - C = 0, \quad \mathbf{q} = \begin{bmatrix}
+        \varphi_{\jnt{MCP}}\\
+        \varphi_{\jnt{PIP}}\\
+        \varphi_{\jnt{DIP}}
+    \end{bmatrix},
+\end{equation}
+
+where $r_{spindle}$ is the radius of the spindle mounted on the motor, $\theta$ is the angle of the motor, $L_{finger}(\mathbf{q})$ is an estimate for the total length of cable from the finger to the whiffle tree. $C$ is a constant defining the total cable length in the system, which then constraints the angle of the motor and the relative angles of the finger. The estimate of the total cable going from the finger to the whiffle tree is defined as:
+
+\begin{equation}
+    L_{finger}(\mathbf{q}) = \sum_{i = 1}^{3} w_i ||\mathbf{r}_{a, i} - \mathbf{r}_{t, i}||,
+\end{equation}
+
+where $\mathbf{r}_{a, i}$ and $\mathbf{r}_{t, i}$ are the attachment and target points of the $i$-th phalanx, respectively, shown in \cref{fig:controller_design_force_application}. The distance between the attachment and target points of each phalanx is scaled with the force ratios $w_i$ to get a better estimate of the total length of cable with the whiffle tree. Differentiating the constraint, we get the velocity constraint:
+
+\begin{equation}
+    \dot{g}(\omega, \mathbf{q}, \dot{\mathbf{q}}) = r_{spindle} \omega + \frac{\partial L_{finger}}{\partial \mathbf{q}} \dot{\mathbf{q}} = 0,
+\end{equation}
+
+and further once more we get the acceleration constraint:
+
+\begin{equation}
+    \ddot{g}(\dot{\omega}, \mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}}) = r_{spindle} \dot{\omega} + \frac{\partial L_{finger}}{\partial \mathbf{q}} \ddot{\mathbf{q}} + \dot{\mathbf{q}}^T \frac{\partial^2 L_{finger}}{\partial \mathbf{q}^2} \dot{\mathbf{q}} = 0.   
+\end{equation}
+
+To reduce numerical drift, Baumgarte stabilization is added, to combine all the constraints into a single equation:
+
+\begin{equation}
+    \label{baumgarte}
+    \ddot{g} + 2\alpha \dot{g} + \beta^2 g = 0, \quad \alpha, \beta > 0.
+\end{equation}
+
+The final constraint in \cref{baumgarte} is defined separately for the flexion and extension cables. The corresponding Lagrange multipliers are treated as the cable tensions $T_f$ and $T_e$ for the flexion and extension cable, respectively, and are solved simultaneously at each timestep.
+
+Since the cables only can pull on the finger, we further impose that the cable tensions must be non-negative:
+
+\begin{equation}
+    T_f, T_e \geq 0.
+\end{equation}
+
+To be clear, this implementation of the cable tension is not a perfect emulation of the real system. In reality, the cable is slightly elastic, and the whiffle trees will provide some friction. There will also be more cable in the system. However, considering that the position of the attachement points, target points, and whiffle trees are not yet decided in the real system, this should be a good enough approximation to test the position controller, and get a better understanding of the dynamics of the system.
+
+\subsection{Updated dynamics with the cable tension}
+
+Given the cable tension $T_x$ for the $x$-th cable, the $x$-th brushed DC motor experiences a load torque of $\tau_l = r_{spindle} T_x$, giving updated mechanical dynamics from \cref{eq:motor_model_mechanical_rewrite}:
+
+\begin{equation}
+    J_m \frac{\mathrm{d}^2\theta_x}{\mathrm{d}t^2}+B_m \frac{\mathrm{d} \theta_x}{\mathrm{d}t} = K_t I_a - r_{spindle} T_x.
+\end{equation}
+
+Similarly, the finger experiences a generalized load torque. Since the cable
+tension acts along the line from the attachment point $\mathbf{r}_{a,i}$ to the
+target point $\mathbf{r}_{t,i}$, the force applied to the $i$-th phalanx is
+
+\begin{equation}
+    \mathbf{F}_{x, i}
+    =
+    w_i T_x
+    \frac{
+        \mathbf{r}_{x,t,i} - \mathbf{r}_{x,a,i}
+    }{
+        \left\|
+            \mathbf{r}_{x,t,i} - \mathbf{r}_{x,a,i}
+        \right\|
+    }.
+\end{equation}
+
+The generalized torque contribution from this force is computed with:
+
+\begin{equation}
+    \boldsymbol{\tau}_{x, i}
+    =
+    \frac{\partial (\mathbf{r}_{x,a,i} - \mathbf{r}_{x,t,i})}{\partial \mathbf{q}}^T
+    \mathbf{F}_{x, i},
+\end{equation}
+
+which leads to the total generalized cable torque on the finger:
+
+\begin{equation}
+    \boldsymbol{\tau}_{cable}
+    =
+    \sum_{i=1}^{3}
+    \boldsymbol{\tau}_{x, i}.
+\end{equation}
+
+Given that we have two motors pulling on the finger with their own cables, we can calculate the total generalized torque from both the flexion and extension cables on the finger as:
+
+\begin{equation}
+    \boldsymbol{\tau}_{cable} = \sum_{i=1}^{3} \frac{\partial (\mathbf{r}_{f, a,i} - \mathbf{r}_{f, t,i})}{\partial \mathbf{q}}^T
+    \mathbf{F}_{f, i} + \sum_{i=1}^{3} \frac{\partial (\mathbf{r}_{e, a,i} - \mathbf{r}_{e, t,i})}{\partial \mathbf{q}}^T
+    \mathbf{F}_{e, i}.
+\end{equation}
+
+This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_motion}:
+
+\begin{equation}
+    \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} + \left(\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})+\mathbf{B}\right)\dot{\mathbf{q}} + \mathbf{K} \left(\mathbf{q} - \mathbf{q}_{\text{eq}}\right) = \boldsymbol{\tau}_{\text{ext}} + \boldsymbol{\tau}_{\text{cable}}.
+\end{equation}
+
+\subsection{Evaluating model reference adaptive controller}
+
+The finger model from \cref{sec:finger_model} is used to simulate the dynamics of the finger in response to the force, and to calculate the force it puts on the cables. The parameters for the motor and finger model are given in [\textbf{TODO: Add table of model parameters}]. Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. To make sure the motors aren't working against each other, they receive an opposite reference angle when the controller is active. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be pulling in the opposite direction, decreasing the tension in its cable. 
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{../Figures/Controller_design/force_diagram.pdf}
+    \caption{Force application on the finger. The flexion motor applies a force $F_f$ on the flexion cable, which gets distributed to the three phalanges through the whiffle tree. Similarly, the extension motor applies a force $F_e$ on the extension cable, which also gets distributed to the three phalanges through its own whiffle tree.}
+    \label{fig:controller_design_force_application}
+\end{figure}
+
