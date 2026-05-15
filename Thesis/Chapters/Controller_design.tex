@@ -353,6 +353,7 @@ where $\boldsymbol{\Gamma}_K \in \mathbb{R}^{2 \times 2}$ and $\gamma_L \in \mat
 For the simulation of the position controller, we will simulate two motors with the dynamics from \cref{eq:controller_design_mrac_system_dynamics}. One for flexion and one for extension, as is the case in our physical system. The force the motors applies on each of their cables gets distributed to the three phalanges through their own whiffle tree, with $w_1 = \frac{1}{2}$ of the force going to the proximal phalanx, $w_2 = \frac{1}{3}$ of the force going to the middle phalanx, and $w_3 = \frac{1}{6}$ of the force going to the distal phalanx. The force application is shown in \cref{fig:controller_design_force_application}. 
 
 \subsection{Cable tension}
+\label{subsec:cable_tension}
 
 To emulate the cable connecting the motor to the finger, the following constraint is added to the system:
 
@@ -404,6 +405,7 @@ To be clear, this implementation of the cable tension is not a perfect emulation
 Given the cable tension $T_x$ for the $x$-th cable, the $x$-th brushed DC motor experiences a load torque of $\tau_l = r_{spindle} T_x$, giving updated mechanical dynamics from \cref{eq:motor_model_mechanical_rewrite}:
 
 \begin{equation}
+    \label{eq:motor_dynamics_cable_tension}
     J_m \frac{\mathrm{d}^2\theta_x}{\mathrm{d}t^2}+B_m \frac{\mathrm{d} \theta_x}{\mathrm{d}t} = K_t I_a - r_{spindle} T_x.
 \end{equation}
 
@@ -436,7 +438,7 @@ The generalized torque contribution from this force is computed with:
 which leads to the total generalized cable torque on the finger:
 
 \begin{equation}
-    \boldsymbol{\tau}_{cable}
+    \boldsymbol{\tau}_{x, cable}
     =
     \sum_{i=1}^{3}
     \boldsymbol{\tau}_{x, i}.
@@ -453,12 +455,23 @@ Given that we have two motors pulling on the finger with their own cables, we ca
 This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_motion}:
 
 \begin{equation}
+    \label{eq:finger_dynamics_cable_tension}
     \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} + \left(\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})+\mathbf{B}\right)\dot{\mathbf{q}} + \mathbf{K} \left(\mathbf{q} - \mathbf{q}_{\text{eq}}\right) = \boldsymbol{\tau}_{\text{ext}} + \boldsymbol{\tau}_{\text{cable}}.
 \end{equation}
 
 \subsection{Evaluating model reference adaptive controller}
 
-The finger model from \cref{sec:finger_model} is used to simulate the dynamics of the finger in response to the force, and to calculate the force it puts on the cables. The parameters for the motor and finger model are given in [\textbf{TODO: Add table of model parameters}]. Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. To make sure the motors aren't working against each other, they receive an opposite reference angle when the controller is active. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be pulling in the opposite direction, decreasing the tension in its cable. 
+In the simulation, \cref{eq:finger_dynamics_cable_tension} is used for simulating the dynamics of the finger, while two sets of \cref{eq:motor_dynamics_cable_tension} are used for simulating the dynamics of the two motors. To connect the models, a cable constraint is added to emulate the cable connecting the motors and the finger, as discussed in \cref{subsec:cable_tension}. The parameters for the motor and finger model are given in \cref{tab:finger_parameters}. The motor parameters are found in \cref{subsec:est_motor_params}. The parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of the unloaded finger to obtain realistic motion. Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. The flexion motor is initialized to $\theta_f(0) = \SI{0}{\radian}$, while the extension motor is initialized to $\theta_e(0) = \frac{\pi}{2}\si{\radian}$. To make sure the motors aren't working against each other, they receive an opposite reference angle when the controller is active. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be pulling in the opposite direction, decreasing the tension in its cable. When the motors are decreasing the tension in their cables, the motor would experience $\tau_l \approx \SI{0}{\newton\metre}$. Therefore the dynamics would change, throwing off the adaptive gains. To account for this, we switch to a PD controller tuned for a unloaded motor, and turn off the adaptive law. Once the motor tries to increase the tension in the line, we switch back to the adaptive controller, and turn on the adaptive law. The reference angles for the flexion motor and the extesnion motor is given by:
+
+\begin{equation}
+    \begin{aligned}
+        r_{\theta_f}(t) &= \begin{cases}
+            \frac{\pi}{2} & \text{if } \sin(\frac{6}{10}\pi\,\theta_f(t)) > 0 \\
+            0 & \text{else}
+        \end{cases} \\
+        r_{\theta_e}(t) &= \theta_e(0) - r_{\theta_f}(t).
+    \end{aligned}
+\end{equation}
 
 
 \begin{figure}
@@ -467,4 +480,31 @@ The finger model from \cref{sec:finger_model} is used to simulate the dynamics o
     \caption{Force application on the finger. The flexion motor applies a force $F_f$ on the flexion cable, which gets distributed to the three phalanges through the whiffle tree. Similarly, the extension motor applies a force $F_e$ on the extension cable, which also gets distributed to the three phalanges through its own whiffle tree.}
     \label{fig:controller_design_force_application}
 \end{figure}
+
+\begin{table}[ht]
+    \centering
+    \caption{Physical parameters used for the finger model.}
+    \label{tab:finger_parameters}
+    \begin{tabular}{lccc}
+        \toprule
+        \multicolumn{4}{l}{\textbf{Phalanx parameters}} \\
+        \midrule
+        Phalanx & $m$ [\si{\kilogram}] & $l$ [\si{\centi\meter}] & $r$ [\si{\milli\meter}] \\
+        \midrule
+        Proximal Phalanx & 0.020 & 4.8 & 8.5 \\
+        Middle Phalanx & 0.015 & 3.0 & 8.5 \\
+        Distal Phalanx & 0.020 & 2.4 & 8.5 \\
+        \midrule
+        \multicolumn{4}{l}{\textbf{Joint parameters}} \\
+        \midrule
+        Joint & $k$ [\si{\newton\meter\per\radian}] 
+              & $b$ [\si{\newton\meter\second\per\radian}] 
+              & $\varphi_{\mathrm{eq}}$ [\si{\radian}] \\
+        \midrule
+        MCP Joint & 1.0 & 0.05 & $\pi/6$ \\
+        PIP Joint & 1.0 & 0.05 & $\pi/4$ \\
+        DIP Joint & 1.0 & 0.05 & $\pi/12$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
