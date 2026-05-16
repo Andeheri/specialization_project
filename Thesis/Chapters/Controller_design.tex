@@ -461,7 +461,9 @@ This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_m
 
 \subsection{Evaluating model reference adaptive controller}
 
-In the simulation, \cref{eq:finger_dynamics_cable_tension} is used for simulating the dynamics of the finger, while two sets of \cref{eq:motor_dynamics_cable_tension} are used for simulating the dynamics of the two motors. To connect the models, a cable constraint is added to emulate the cable connecting the motors and the finger, as discussed in \cref{subsec:cable_tension}. The parameters for the motor and finger model are given in \cref{tab:finger_parameters}. The motor parameters are found in \cref{subsec:est_motor_params}. The parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of the unloaded finger to obtain realistic motion. Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. The flexion motor is initialized to $\theta_f(0) = \SI{0}{\radian}$, while the extension motor is initialized to $\theta_e(0) = \frac{\pi}{2}\si{\radian}$. To make sure the motors aren't working against each other, they receive an opposite reference angle when the controller is active. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be pulling in the opposite direction, decreasing the tension in its cable. When the motors are decreasing the tension in their cables, the motor would experience $\tau_l \approx \SI{0}{\newton\metre}$. Therefore the dynamics would change, throwing off the adaptive gains. To account for this, we switch to a PD controller tuned for a unloaded motor, and turn off the adaptive law. Once the motor tries to increase the tension in the line, we switch back to the adaptive controller, and turn on the adaptive law. The reference angles for the flexion motor and the extesnion motor is given by:
+In the simulation, \cref{eq:finger_dynamics_cable_tension} is used for simulating the dynamics of the finger, while two sets of \cref{eq:motor_dynamics_cable_tension} are used for simulating the dynamics of the two motors. To connect the models, a cable constraint is added to emulate the cable connecting the motors and the finger, as discussed in \cref{subsec:cable_tension}. The parameters for the motor and finger model are given in \cref{tab:finger_parameters}. The motor parameters are found in \cref{subsec:est_motor_params}. The parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of the unloaded finger to obtain realistic motion. 
+
+Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. The flexion motor is initialized to $\theta_f(0) = \SI{0}{\radian}$, while the extension motor is initialized to $\theta_e(0) = \frac{\pi}{2}\si{\radian}$. To make sure the motors aren't working against each other, they receive an opposite reference angle when the controller is active. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be pulling in the opposite direction, decreasing the tension in its cable. When the motors are decreasing the tension in their cables, the motor would experience $\tau_l \approx \SI{0}{\newton\metre}$. Therefore the dynamics would change, throwing off the adaptive gains. To account for this, we switch to a pretuned (PT) controller, tuned for a unloaded motor, and turn off the adaptive law. Once the motor tries to increase the tension in the line, we switch back to the adaptive controller, and turn on the adaptive law. The pretuned controller is tuned through the exact same adaptive controller, just with an unloaded motor for $\SI{100}{\second}$. When the pretuned controller is active, these final values of $\mathbf{K}$ and $L$ are used instead. The reference angles for the flexion motor and the extension motor is given by:
 
 \begin{equation}
     \begin{aligned}
@@ -473,6 +475,19 @@ In the simulation, \cref{eq:finger_dynamics_cable_tension} is used for simulatin
     \end{aligned}
 \end{equation}
 
+The reference models parameters from \cref{eq:controller_design_mrac_reference_model} are set to $\omega_n = 8$ and $\zeta = 1$. $\mathbf{Q} = \begin{bmatrix}
+    10 & 0 \\
+    0 & 1
+\end{bmatrix} \implies \mathbf{P} \approx \begin{bmatrix}
+    3.56 & 0.078 \\
+    0.078 & 0.036
+\end{bmatrix}$. The adaptive gain matrices are set to $\boldsymbol{\Gamma}_K = \begin{bmatrix}
+    3 & 0 \\
+    0 & 0.5
+\end{bmatrix}$ and $\gamma_L = 2$. The adaptive gains are initalized to $\mathbf{K}(0) = \begin{bmatrix}
+    0.0 \\
+    0.0
+\end{bmatrix}$ and $L(0) = 1$. \cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate around the reference. Over time, however, the adaptive gains change to values that allow the system to track the reference model more closely. While the pretuned controller is active, indicated in grey, the motor tracks the reference model very closely. \cref{fig:mrac_gains_50_seconds} shows the evolution of the adaptive gains $\mathbf{K}$ and $L$, aswell as the error between the angles of the motors and their respective model angles, over $\SI{50}{\second}$. As can be seen in the figure, $K_2$ converge to a certain value, while $K_1$ and $L$ coincide and keeps growing. It's also clear that the error doesn't go to zero, but has some steady-state error. But it's still quite small.
 
 \begin{figure}
     \centering
@@ -501,10 +516,25 @@ In the simulation, \cref{eq:finger_dynamics_cable_tension} is used for simulatin
               & $b$ [\si{\newton\meter\second\per\radian}] 
               & $\varphi_{\mathrm{eq}}$ [\si{\radian}] \\
         \midrule
-        MCP Joint & 1.0 & 0.05 & $\pi/6$ \\
-        PIP Joint & 1.0 & 0.05 & $\pi/4$ \\
-        DIP Joint & 1.0 & 0.05 & $\pi/12$ \\
+        MCP Joint & 0.5 & 0.05 & $\pi/6$ \\
+        PIP Joint & 0.5 & 0.05 & $\pi/4$ \\
+        DIP Joint & 0.5 & 0.05 & $\pi/12$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_long_run_updated_pd_high_res_0_10s_compact.pdf}
+    \caption{Simulation results of the MRAC scheme for flexion and extension motor over $\SI{10}{\second}$.}
+    \label{fig:mrac_simulation_results_10_seconds}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_long_run_updated_pd_high_res_0_50s.pdf}
+    \caption{Adaptive gains and error over time for MRAC scheme for $\SI{50}{\second}$.}
+    \label{fig:mrac_gains_50_seconds}
+\end{figure}
