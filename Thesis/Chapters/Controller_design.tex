@@ -250,7 +250,7 @@ where $\mu$ is the friction coefficient, and $\Phi$ is the total wrap angle of t
 \section{Model reference adaptive control (MRAC) for position control}%
 \label{sec:mrac_implementation}
 
-When the hand is not in contact with any objects, we want to control the position of the hand. However, due to the big differences in mass, stiffness and dampening in the hand between patients, it becomes difficult to design a controller that can guarantee good performance for all patients. To address this issue, we will implement a model reference adaptive control (MRAC) scheme, which will allow us to adapt the controller parameters online based on the observed behavior of the system. To be clear, this is mostly just to speed up the tuning process of the controller, and get good enough control for tests when frequently switching between patients. I would however reccommend to use a simpler control approach if the system is to be used several times by the same patient. This will be discussed in more detail in [\textbf{TODO: Add reference to chapter: discussion}].
+When the hand is not in contact with any objects, we want to control the position of the hand. However, due to the big differences in mass, stiffness and dampening in the hand between patients, it becomes difficult to design a controller that can guarantee good performance for all patients. To address this issue, we will implement a model reference adaptive control (MRAC) scheme, which will allow us to adapt the controller parameters online based on the observed behavior of the system. To be clear, this is mostly just to speed up the tuning process of the controller, and get good enough control for tests when frequently switching between patients. I would however reccommend to use a simpler control approach if the system is to be used several times by the same patient. This will be discussed in more detail in \cref{ch:discussion}.
 
 As discussed in \cref{subsec:mass_spring_model}, because of modelling uncertainties and the fact that we don't measure anything at the hand, the finger model from \cref{sec:finger_model} becomes unobservable. Therefore controlling the angles of the fingers directly becomes infeasible. Instead we will focus on controlling the position of the motor precisely, as it's connected directly to the finger through a cable. For this we will use the MRAC scheme introduced in \cref{subsec:theory_control_mrac}. It calls for the system to be controllable. Using the simplified model of the finger dynamics as a torsional mass-spring-damper system acting on the motor, from \cref{subsec:state_space_model_load}, we can check if the simplified system is controllable.
 
@@ -507,13 +507,7 @@ The reference models parameters from \cref{eq:controller_design_mrac_reference_m
 \end{bmatrix}$ and $\gamma_L = 2$. The adaptive gains are initalized to $\mathbf{K}(0) = \begin{bmatrix}
     0.0 \\
     0.0
-\end{bmatrix}$ and $L(0) = 1$.  
-
-\subsection{Evaluation of MRAC scheme}
-\cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate around the reference. Over time, however, the adaptive gains change to values that allow the system to track the reference model more closely. While the pretuned controller is active, indicated in grey, the motor tracks the reference model very closely. 
-
-\cref{fig:mrac_gains_50_seconds} shows the evolution of the adaptive gains $\mathbf{K}$ and $L$, aswell as the error between the angles of the motors and their respective reference model angles, over $\SI{50}{\second}$. As can be seen in the figure, $K_2$ converge to a certain value, while $K_1$ and $L$ eventually coincide and keeps growing together. Interestingly, as $K_1 \approx L$ over time, the MRAC controller in \cref{eq:controller_design_mrac_reference_current} has effectively become a PD controller, where $K_1$ is the proportional gain and $K_2$ is the derivative gain.
-It's also clear from the figure that the error doesn't go to zero, but has some steady-state error. But it's still quite small. This tells us that the adaptive controller gains at some point reach a local optimum. Therefore, to combat the ever increasing gains, we may want to switch to a fixed-gain controller once the gains have converged. \cref{fig:fixed_gains_mrac} shows a simulation over $\SI{10}{\second}$ using the adaptive gains found in \cref{fig:mrac_gains_50_seconds} after $\SI{50}{\second}$, but with the gains fixed instead of adaptive. 
+\end{bmatrix}$ and $L(0) = 1$.
 
 \begin{figure}
     \centering
@@ -549,6 +543,8 @@ It's also clear from the figure that the error doesn't go to zero, but has some 
     \end{tabular}
 \end{table}
 
+\subsection{Evaluation of MRAC scheme}
+\cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate around the reference. Over time, however, the adaptive gains $\mathbf{K}$ and $L$ change to values that allow the system to track the reference model more closely. While the pretuned controller is active, indicated in grey, the motor tracks the reference model very closely. 
 
 \begin{figure}
     \centering
@@ -556,6 +552,10 @@ It's also clear from the figure that the error doesn't go to zero, but has some 
     \caption{Simulation results of the MRAC scheme for flexion and extension motor over $\SI{10}{\second}$.}
     \label{fig:mrac_simulation_results_10_seconds}
 \end{figure}
+
+Continuing the simulation to $\SI{50}{\second}$, \cref{fig:mrac_gains_50_seconds} shows the evolution of the adaptive gains, aswell as the error between the angles of the motors and their respective reference model angles. As can be seen in the figure, $K_2$ seem to converge to a certain value, while $K_1$ and $L$ eventually coincide and keeps growing together. Interestingly, as $K_1 \approx L$ over time, the MRAC controller in \cref{eq:controller_design_mrac_reference_current} has effectively become a PD controller, where $K_1$ is the proportional gain and $K_2$ is the derivative gain. It's also clear from the figure that the error doesn't go to zero, but has some steady-state error, though quite small. This tells us that the adaptive controller gains at some point reach a local optimum. Therefore, to combat the ever increasing gains, we may want to switch to a fixed-gain controller once the gains have converged. \cref{fig:fixed_gains_mrac} shows a simulation over $\SI{10}{\second}$ using the adaptive gains found in \cref{fig:mrac_gains_50_seconds} after $\SI{50}{\second}$, but with the gains fixed instead of adaptive. Here we can see that the motors are able to track their reference angles rather well, only with a slight error in the transition to a new reference angle. Looking at the current commands, they reach their maximum stall current of $\SI{4.9}{\ampere}$ for the static gains. This might also explain the ever growing adaptive gains in the MRAC scheme, as the controller tries to find gains that can track the reference model better, but is limited by the maximum current.
+
+Hence we may conclude that the MRAC scheme could prove useful in quickly tuning a position controller, when frequently switching between patients. 
 
 
 \begin{figure}
