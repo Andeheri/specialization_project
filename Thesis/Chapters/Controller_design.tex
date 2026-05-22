@@ -544,30 +544,39 @@ The reference models parameters from \cref{eq:controller_design_mrac_reference_m
 \end{table}
 
 \subsection{Evaluation of MRAC scheme}
-\cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate around the reference. Over time, however, the adaptive gains $\mathbf{K}$ and $L$ change to values that allow the system to track the reference model more closely. While the pretuned controller is active, indicated in grey, the motor tracks the reference model very closely. 
+\label{subsec:mrac_evaluation}
+\cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate around the reference model. Over time, however, the adaptive gains $\mathbf{K}$ and $L$ change to values that allow the system to track the reference model more closely, and the oscillations become less prominent. While the pretuned controller is active, indicated in grey, the motor tracks the reference model quite closely. Interestingly it seems to have a slightly faster response than the reference model. This might be due some inconsistensies with the cable tensioning implementation.
 
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_long_run_updated_pd_high_res_0_10s_compact.pdf}
+    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_wn_5_long_run_2_0_10s_compact.pdf}
     \caption{Simulation results of the MRAC scheme for flexion and extension motor over $\SI{10}{\second}$.}
     \label{fig:mrac_simulation_results_10_seconds}
 \end{figure}
 
-Continuing the simulation to $\SI{50}{\second}$, \cref{fig:mrac_gains_50_seconds} shows the evolution of the adaptive gains, aswell as the error between the angles of the motors and their respective reference model angles. As can be seen in the figure, $K_2$ seem to converge to a certain value, while $K_1$ and $L$ eventually coincide and keeps growing together. Interestingly, as $K_1 \approx L$ over time, the MRAC controller in \cref{eq:controller_design_mrac_reference_current} has effectively become a PD controller, where $K_1$ is the proportional gain and $K_2$ is the derivative gain. It's also clear from the figure that the error doesn't go to zero, but has some steady-state error, though quite small. This tells us that the adaptive controller gains at some point reach a local optimum. Therefore, to combat the ever increasing gains, we may want to switch to a fixed-gain controller once the gains have converged. \cref{fig:fixed_gains_mrac} shows a simulation over $\SI{10}{\second}$ using the adaptive gains found in \cref{fig:mrac_gains_50_seconds} after $\SI{50}{\second}$, but with the gains fixed instead of adaptive. Here we can see that the motors are able to track their reference angles rather well, only with a slight error in the transition to a new reference angle. Looking at the current commands, they reach their maximum stall current of $\SI{4.9}{\ampere}$ for the static gains. This might also explain the ever growing adaptive gains in the MRAC scheme, as the controller tries to find gains that can track the reference model better, but is limited by the maximum current.
-
-Hence we may conclude that the MRAC scheme could prove useful in quickly tuning a position controller, when frequently switching between patients. 
-
-
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_long_run_updated_pd_high_res_0_50s.pdf}
-    \caption{Adaptive gains and error over time for MRAC scheme for $\SI{50}{\second}$, where $K_1$ and $L$ keep growing together.}
-    \label{fig:mrac_gains_50_seconds}
+    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_wn_5_long_run_2_90_100s_compact.pdf}
+    \caption{Simulation results of the MRAC scheme for flexion and extension motor after $\SI{90}{\second}$.}
+    \label{fig:mrac_simulation_results_90_seconds}
 \end{figure}
 
+Continuing the simulation to $\SI{100}{\second}$, \cref{fig:mrac_gains_100_seconds} shows the evolution of the adaptive gains, aswell as the error between the motor angles and their respective reference model angles. \cref{fig:mrac_simulation_results_90_seconds} shows the simulation results for $\SI{10}{\second}$ after $\SI{90}{\second}$. Looking at \cref{fig:mrac_gains_100_seconds}, after $\sim \SI{10}{\second}$, $K_2$ seem to converge to a certain value, while $K_1$ and $L$ eventually keeps growing together, almost logarithmically. The continued growth of $K_1$ and $L$ might be due to the fact that the system is trying to find gains that can track the reference model better, but is limited by the maximum current that the motor can provide. Looking at the current commands going to the motors in \cref{fig:mrac_simulation_results_90_seconds}, it can be observed that they are clipped by the maximum stall current of $\SI{4.9}{\ampere}$. Looking back at \cref{fig:mrac_gains_100_seconds}, it's clear that the error between the motor angles and their respective reference model decrease over time as the adaptive gains update. However they don't go to zero, but end up with some steady-state error, though quite small. This tells us that the adaptive controller gains at some point reach a local optimum. Therefore, to combat the ever increasing gains, we may want to switch to a fixed-gain controller once the gains have converged. 
+
+\cref{fig:fixed_gains_mrac} shows a simulation over $\SI{10}{\second}$ using the adaptive gains found in \cref{fig:mrac_gains_100_seconds} after $\SI{100}{\second}$, but with the gains fixed instead of adaptive. Here we can see that the motors are able to track their reference angles rather well, only with a slight error in the transition to a new reference angle. Hence we may conclude that the MRAC scheme could prove useful in quickly tuning a position controller, when frequently switching between patients. 
+
+
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_long_run_updated_pd_high_res_precomputed_0_50s_compact.pdf}
-    \caption{Simulation results of the MRAC scheme for flexion and extension motor over $\SI{10}{\second}$, with the adaptive gains found in \cref{fig:mrac_gains_50_seconds} after $\SI{50}{\second}$, but with the gains fixed instead of adaptive.}
+    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_wn_5_long_run_2gains_0_100s.pdf}
+    \caption{Adaptive gains and error over time for MRAC scheme for $\SI{100}{\second}$, where $K_1$ and $L$ keep growing together.}
+    \label{fig:mrac_gains_100_seconds}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_wn_5_long_run_2_precomputed0_10s_compact.pdf}
+    \caption{Simulation results of the MRAC scheme for flexion and extension motor over $\SI{10}{\second}$, with the adaptive gains found in \cref{fig:mrac_gains_100_seconds} after $\SI{100}{\second}$, but with the gains fixed instead of adaptive.}
     \label{fig:fixed_gains_mrac}
 \end{figure}
