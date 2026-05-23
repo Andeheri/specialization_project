@@ -218,6 +218,7 @@ Figure \cref{fig:controller_design_torque_control_rigid_object} shows emulated s
 Ideally, if there was no friction between the motor and the finger, $\tau_l = \tau_{finger}$. In reality, because of the bowden tube the cable is running through, and other inconsistencies in the setup, there will be some friction. Therefore, we can expect $\tau_l = \tau_{finger} + \tau_{friction}$, where $\tau_{friction}$ is the torque lost to friction. Hence, without any direct measurement of the applied force to the finger, we would expect that the applied force to the finger will be less than the reference force. However, with integrated force sensors in the fingertip, this wouldn't be an issue. 
 
 \subsection{Force control with integrated fingertip force sensors}
+\label{subsec:fingertip_sensors}
 
 With integrated force sensors in the fingertip, we could use a cascade control approach. Since the motor torque and force are proportional to the armature current, we could then define the reference current $r_{\jnt{I_a}}$ as a feedforward and PI controller with the reference force $r_{\jnt{F}}$ and the measured force $F_{meas}$ as input:
 
@@ -233,6 +234,13 @@ In our system, the cables are running through bowden tubes. This introduces a si
 \end{equation}
 
 where $\mu$ is the friction coefficient, and $\Phi$ is the total wrap angle of the cable around the bowden tube. In theory one could include this in the feedforward term, but for the time being, I'll assume it to be unkown. For simulation purposes,  I'll assume that $\exp(-\mu \Phi)\equiv 0.1$. This means that only $90\%$ of the motor force is applied to the finger. \cref{fig:controller_with_vs_without_friction_force_control} shows the simulation of the force control with and without the integrated fingertip force sensors, with $T_s = \SI{0.2}{\milli\second}$ and $r_{\jnt{F}}=\SI{100}{\newton}$. Here the controller parameters were chosen simply through repeated simulation, where $K_p = 0.001$ and $K_i = 8$. These will most likely have to be retuned in the actual system. As can be seen in \cref{fig:force_control_friction_without}, without the integrated fingertip force sensors, the applied force to the finger never reaches its target, as is expected due to the friction. With the integrated fingertip force sensors, as shown in \cref{fig:force_control_friction_with}, the applied force to the finger quickly converges to the reference force, despite the friction.
+
+In the simulation, the the resultant force after the friction was assumed directly applied to the fingertip. In the real system however, a whiffle tree will be used. It might therefore be usefult to scale the feedforward term to account for the total force the motor will have to pull on the whiffle tree, such that the reference force is applied to the fingertip. Given that the force ratio for the distal phalanx is $w_3$, the feedforward term could instead be defined as:
+
+\begin{equation}
+    \label{eq:controller_design_torque_control_reference_with_force_feedback_scaled_feedforward}
+    r_{\jnt{I_a}}(t) = \underbrace{\frac{1}{w_3}\frac{r_\jnt{F} r_{\jnt{spindle}}}{K_t}}_{\text{Scaled feedforward}} + \underbrace{K_p (r_{\jnt{F}} - F_{meas}(t)) + K_i \int_{t_0}^t (r_{\jnt{F}} - F_{meas}(\tau)) \, d\tau}_{\text{PI \, controller}}.
+\end{equation}
 
 \begin{figure}[htbp]
     \centering
