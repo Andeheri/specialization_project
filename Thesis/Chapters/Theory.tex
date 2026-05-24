@@ -1,5 +1,5 @@
 
-\chapter{Theory}%
+\chapter{Theoretical background}%
 \label{ch:theory}
 
 \section{Anatomy}%
@@ -46,7 +46,7 @@ To explain the actions of muscles upon the skeleton, we use anatomical terms of 
 \label{subsec:theory_hand_anatomy}
 The hand is comprised of several bones, muscles, tendons, and ligaments. The bones, illustrated in Figure~\ref{fig:theory_hand_bones}, include the \textit{carpals}, \textit{metacarpals}, and \textit{phalanges}. The carpals make out the wrist, the metacarpals make out the palm, and the phalanges make out the fingers. The thumb has two phalanges, while the other fingers have three. The bones of interest are the phalanges (marked in green), as they are the ones being moved by the exoskeleton. The metacarpals are assumed stationary for the task at hand, as the exoskeleton will provide stiffness to the palm and wrist. 
 
-The phalanges are further divided into three sections: the \textit{proximal phalanges}, the \textit{middle phalanges}, and the \textit{distal phalanges}. The proximal phalanges are the ones closest to the palm, while the distal phalanges are the ones furthest from the palm. The middle phalanges are the ones in between. The thumb does not have a middle phalanx, as it only has two phalanges.
+The phalanges are further divided into three sections: the \textit{proximal phalanges} (PP), the \textit{middle phalanges} (MP), and the \textit{distal phalanges} (DP). The proximal phalanges are the ones closest to the palm, while the distal phalanges are the ones furthest from the palm. The middle phalanges are the ones in between. The thumb does not have a middle phalanx, as it only has two phalanges.
 
 \begin{figure}
     \centering
@@ -71,8 +71,23 @@ At each of the joints, there are collateral ligaments that provide stability. Fo
     \label{fig:theory_hand_joints}
 \end{figure}
 
-\section{Modelling}%
+\section{Modelling theory}%
 \label{sec:theory_modelling}
+
+\subsection{Euler-Lagrange equations}%
+\label{subsec:theory_modelling_euler_lagrange_equations}
+
+The Euler-Lagrange equations are a set of second-order ordinary differential equations that describe the dynamics of a system. They are derived using the total potential and kinetic energy of the system, denoted by $V$ and $T$. Together, they form the Lagrangian of the system, denoted by $\mathcal{L}$, which is defined as:
+
+\begin{equation}
+    \mathcal{L} = T - V.
+\end{equation}
+
+The Euler-Lagrange equations in vector form are given by:
+\begin{equation}
+    \frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{\partial \mathcal{L}}{\partial \dot{\mathbf{q}}} \right) - \frac{\partial \mathcal{L}}{\partial \mathbf{q}} = \mathbf{Q},
+\end{equation}
+where $\mathbf{q}$ are the generalized coordinates, which describe the configuration of the system, and $\mathbf{Q}$ are the generalized forces, describing the external influences on the system.
 
 \subsection{Homogenous transformations}%
 \label{subsec:theory_modelling_homogenous_transformations}
@@ -132,8 +147,50 @@ Given a point $\mathbf{p}_n$ in frame $n$, we can express it in frame $1$ as:
     \end{bmatrix} = \mathbf{H}_2^1 \mathbf{H}_3^2 \cdots \mathbf{H}_n^{n-1} \mathbf{p}_n = \mathbf{H}_n^1 \mathbf{p}_n.
 \end{equation}
 
-\section{Control}%
+\section{Control theory}%
 \label{sec:theory_control}
+
+\subsection{Discrete-time system analysis}
+\label{subsec:theory_discrete_time_system_analysis}
+
+When realizing a controller on a digital computer, the system is often modelled as a discrete-time system, as the samples are taken at discrete time steps. A sample of state $y$ at time step $k$ is denoted as $y[k]$. The sampling time, denoted by $T_s$, is the time between two consecutive samples, such that if $y[k] = y(t)$, then $y[k+1] = y(t + T_s)$. Usually the input of the system is denoted $u[k]$. Often the discrete-system can be expressed as a \textit{auto-regressive} (AR) model, where the current state of the system is given by a linear combination of the previous states and inputs, as shown in the following equation:
+
+\begin{equation}
+    y[k] = \sum_{i=1}^{n} a_i y[k-i] + \sum_{j=1}^{m} b_j u[k-j],
+\end{equation}
+
+To analyze the stability of a discrete-time system, we can use the \textit{z-transform}. 
+
+\subsubsection{Z-transform}
+The z-transform of a discrete-time signal $y[k]$ is defined as:
+
+\begin{equation}
+    y(z) = \sum_{k=0}^{\infty} y[k] z^{-k}.
+\end{equation}
+
+Some useful properties of the z-transform include:
+
+\begin{itemize}
+    \item Linearity: $a f[k] + b g[k] \xrightarrow{\mathcal{Z}} a f(z) + b g(z)$.
+    \item Time-shift: $y[k-n] \xrightarrow{\mathcal{Z}} z^{-n} y(z)$.
+\end{itemize}
+
+\subsubsection{Stability analysis of AR model}
+
+Using the properties of the $z$-transform, the AR model can be written in the
+$z$-domain as:
+\begin{equation}
+    h(z) \triangleq \frac{y(z)}{u(z)}
+    =
+    \frac{\sum_{j=1}^{m} b_j z^{-j}}
+    {1 - \sum_{i=1}^{n} a_i z^{-i}},
+\end{equation}
+where $h(z)$ denotes the system transfer function. For a causal discrete-time
+system, stability requires all poles of $h(z)$ to lie strictly inside the unit
+circle, i.e.,
+\begin{equation}
+    |p_i| < 1, \qquad i = 1,\dots,n.
+\end{equation}
 
 \subsection{State-Space representation}%
 \label{subsec:theory_control_state_space}
@@ -167,7 +224,46 @@ A system is said to be \textit{controllable} if it is possible to drive the stat
 
 If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, then the system is controllable.
 
-\subsection{MRAC}%
+\subsection{Static parametric model (SPM)}%
+\label{subsec:theory_control_static_parametric_model}
+A \textit{static parametric model} (SPM) is a special form of a dynamical system relating the input and output of a system when there are unknown parameters. \cite[p. 13]{ioannouAdaptiveControlTutorial2006} defines a SPM as follows:
+
+\begin{equation}
+    \label{eq:theory_control_static_parametric_model}
+    z = {\boldsymbol{\theta}^*}^\intercal \boldsymbol{\phi},
+\end{equation}
+
+where $z \in \mathbb{R}$, $\boldsymbol{\phi} \in \mathbb{R}^n$ are available for measurement, while $\boldsymbol{\theta}^* \in \mathbb{R}^n$ is the unknown parameter vector. 
+
+\subsection{Gradient method for estimating unkown parameters}
+\label{subsec:theory_gradient_method}
+Given a SPM, we can use the \textit{gradient method} to estimate the unknown parameters. \cite[p. 180--185]{ioannouRobustAdaptiveControl2012} defines the gradient method as follows. Given the SPM in \cref{eq:theory_control_static_parametric_model}, we can define the estimate of $z$, $\hat{z}$, as:
+
+\begin{equation}
+    \hat{z} = \boldsymbol{\theta}^\intercal \boldsymbol{\phi},
+\end{equation}
+
+where $\boldsymbol{\theta} \in \mathbb{R}^n$ is the estimated parameter vector. We can define the estimation error as:
+
+\begin{equation}
+    \epsilon = \frac{z - \hat{z}}{m_s^2},
+\end{equation}
+
+where $m_s^2$ is defined such that $\phi/m_s$ is bounded. Defining the adaptive law as:
+
+\begin{equation}
+    \dot{\boldsymbol{\theta}} = \boldsymbol{\Gamma} \boldsymbol{\phi} \epsilon, \quad \boldsymbol{\Gamma} = \boldsymbol{\Gamma}^\intercal > 0,
+\end{equation}
+
+\cite{ioannouRobustAdaptiveControl2012} proves that $\mathbf{\theta} \to \mathbf{\theta}^*$ as $t \to \infty$, given that $\boldsymbol{\phi}$ is persistently exciting (PE). A signal being PE means that there exists a $T > 0$ and $\alpha > 0$ such that:
+
+\begin{equation}
+    \int_{t}^{t+T} \boldsymbol{\phi}(\tau) \boldsymbol{\phi}^\intercal(\tau) \mathrm{d}\tau \geq \alpha \mathbf{I}, \quad \forall t \geq 0.
+\end{equation}
+
+Essentially, this means that $\boldsymbol{\phi}$ must be sufficiently rich in frequency content, and cannot be a constant signal.
+
+\subsection{Model Reference Adaptive Control (MRAC)}%
 \label{subsec:theory_control_mrac}
 
 \textit{Model Reference Adaptive Control} (MRAC) is a control strategy that aims to make the output of a system follow the output of a reference model, even in the presence of uncertainties or disturbances. The following definition of MRAC is based on \textcite[325--327]{ioannouRobustAdaptiveControl2012}. 
@@ -227,19 +323,19 @@ Defining the tracking error $\mathbf{e}(t)$ as:
     \mathbf{e}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
 \end{equation}
 
-Solving for $\mathbf{P}$ for a $\mathbf{Q} =\mathbf{Q}^T > 0$ in the Lyapunov equation:
+Solving for $\mathbf{P}$ for a $\mathbf{Q} =\mathbf{Q}^\intercal > 0$ in the Lyapunov equation:
 
 \begin{equation}
-    \mathbf{A}_m^T\mathbf{P} + \mathbf{P}\mathbf{A}_m = -\mathbf{Q},
+    \mathbf{A}_m^\intercal\mathbf{P} + \mathbf{P}\mathbf{A}_m = -\mathbf{Q},
 \end{equation}
 
 we have the adaptive law:
 
 \begin{equation}
     \begin{aligned}
-        \dot{\mathbf{K}}(t) &= \mathbf{B}_m^T \mathbf{P} \mathbf{e} \mathbf{x}^T sgn(l), \\
-        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^T \mathbf{P} \mathbf{e} \mathbf{r}^T sgn(l).
+        \dot{\mathbf{K}}(t) &= \mathbf{B}_m^\intercal \mathbf{P} \mathbf{e} \mathbf{x}^\intercal sgn(l), \\
+        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^\intercal \mathbf{P} \mathbf{e} \mathbf{r}^\intercal sgn(l).
     \end{aligned}
 \end{equation}
 
-\cite{ioannouRobustAdaptiveControl2012} proves that with this adaptive law, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\mathbf{e}(t)$ are bounded, and the tracking error $\mathbf{e}(t) \to 0$ as $t \to \infty$.
+\cite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\mathbf{e}(t)$ are bounded, and the tracking error $\mathbf{e}(t) \to 0$ as $t \to \infty$.

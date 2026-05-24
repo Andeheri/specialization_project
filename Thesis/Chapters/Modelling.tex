@@ -6,23 +6,57 @@
 
 For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint doesn't have the same support-structure, so it's free to move side to side, but this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger is minimal.
 
-For our model, we assume that the finger is composed of three links, with three revolute joints, like a \textit{planar manipulator} (\textbf{Reference to theory:planar manipulator}). To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{fig:modelling_parameters}.
+For our model, we assume that the finger is composed of three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}.
 
-\begin{figure}[htbp]%
+\begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./Figures/Placeholder.png}
-    \caption{Schematic of the finger model, with three revolute joints, torsional springs and dampers.}
+    \includegraphics[width=1.0\textwidth]{../Figures/Modelling/finger_variables_visualization.pdf}
+    \caption{Visualization of the finger model, with three revolute joints, where the relative joint angles, and the lengths of each phalanx are labeled.}
     \label{fig:modelling_finger_model}
 \end{figure}
 
-\begin{figure}[htbp]%
+\begin{table}
+    \caption{Parameters used in the finger model.}
+    \label{tab:finger_params}
     \centering
-    \includegraphics[width=0.5\textwidth]{./Figures/Placeholder.png}
-    \caption{Table of model parameters.}
-    \label{fig:modelling_parameters}
-\end{figure}
+    \begin{tabular}{llccc}
+        \toprule
+        Parameter & Link/joint & Symbol & Value & Unit \\
+        \midrule
+        \multirow{3}{*}{Mass}
+            & PP & $m_{\jnt{PP}}$ & $20$ & \multirow{3}{*}{$\si{\gram}$} \\
+            & MP & $m_{\jnt{MP}}$ & $15$ & \\
+            & DP & $m_{\jnt{DP}}$ & $20$ & \\
+        \midrule
+        \multirow{3}{*}{Length}
+            & PP & $l_{\jnt{PP}}$ & $48$ & \multirow{3}{*}{$\si{\milli\metre}$} \\
+            & MP & $l_{\jnt{MP}}$ & $30$ & \\
+            & DP & $l_{\jnt{DP}}$ & $24$ & \\
+        \midrule
+        \multirow{3}{*}{Radius}
+            & PP & $r_{\jnt{PP}}$ & $8.5$ & \multirow{3}{*}{$\si{\milli\metre}$} \\
+            & MP & $r_{\jnt{MP}}$ & $8.5$ & \\
+            & DP & $r_{\jnt{DP}}$ & $8.5$ & \\
+        \midrule
+        \multirow{3}{*}{Equilibrium angle}
+            & MCP & $\varphi_{\jnt{MCP, eq}}$ & $\pi/6$ & \multirow{3}{*}{$\si{\radian}$} \\
+            & PIP & $\varphi_{\jnt{PIP, eq}}$ & $\pi/4$ & \\
+            & DIP & $\varphi_{\jnt{DIP, eq}}$ & $\pi/12$ & \\
+        \midrule
+        \multirow{3}{*}{Stiffness coefficient}
+            & MCP & $k_{\jnt{MCP}}$ & $0.5$ & \multirow{3}{*}{$\si{\newton\metre\per\radian}$} \\
+            & PIP & $k_{\jnt{PIP}}$ & $0.5$ & \\
+            & DIP & $k_{\jnt{DIP}}$ & $0.5$ & \\
+        \midrule
+        \multirow{3}{*}{Damping coefficient}
+            & MCP & $b_{\jnt{MCP}}$ & $0.05$ & \multirow{3}{*}{$\si{\newton\metre\second\per\radian}$} \\
+            & PIP & $b_{\jnt{PIP}}$ & $0.05$ & \\
+            & DIP & $b_{\jnt{DIP}}$ & $0.05$ & \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-To model the dynamics of the finger, we'll use the Euler-Lagrange equations as shown in (\textbf{Add reference to theory: Euler-Lagrange Equations}). We'll define our generalized coordinates as the relative joint angles, $\varphi_{\jnt{MCP}}$, $\varphi_{\jnt{PIP}}$ and $\varphi_{\jnt{DIP}}$:
+To model the dynamics of the finger, we'll use the Euler-Lagrange equations as shown in \cref{subsec:theory_modelling_euler_lagrange_equations}. We'll define our generalized coordinates as the relative joint angles, $\varphi_{\jnt{MCP}}$, $\varphi_{\jnt{PIP}}$ and $\varphi_{\jnt{DIP}}$:
 
 \begin{equation}
     \label{eq:modelling_finger_generalized_coordinates}
@@ -68,14 +102,7 @@ The rotational kinetic energy of the system is rather straightforward to derive,
 
 The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the position of the center of mass of each link and taking the time derivative. To find the position of the center of mass, we'll use homogenous transformations, as described in \cref{subsec:theory_modelling_homogenous_transformations}. 
 
-Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is alligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is alligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is alligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is alligned with the distal phalanx. The frames are shown in \cref{fig:modelling_ht_frames}. The homogenous transformations between these frames can be expressed as:
-
-\begin{figure}[htbp]%
-    \centering
-    \includegraphics[width=0.5\textwidth]{./Figures/Placeholder.png}
-    \caption{Schematic of the homogenous transformation frames.}
-    \label{fig:modelling_ht_frames}
-\end{figure}
+Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is alligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is alligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is alligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is alligned with the distal phalanx. The homogenous transformations between these frames can be expressed as:
 
 \begin{equation}
     \label{eq:modelling_homogenous_transformations}
@@ -122,7 +149,7 @@ Extracting the x and y components of the position, defining them as $\mathbf{r}_
 
 \begin{equation}
     \label{eq:modelling_trans_kinetic_energy}
-    T_{\text{trans}} = \frac{1}{2} \left [m_{\jnt{PP}}\dot{\mathbf{r}}_{\jnt{PP, CM}}^T\dot{\mathbf{r}}_{\jnt{PP, CM}} + m_{\jnt{MP}}\dot{\mathbf{r}}_{\jnt{MP, CM}}^T\dot{\mathbf{r}}_{\jnt{MP, CM}} + m_{\jnt{DP}}\dot{\mathbf{r}}_{\jnt{DP, CM}}^T\dot{\mathbf{r}}_{\jnt{DP, CM}}\right ].
+    T_{\text{trans}} = \frac{1}{2} \left [m_{\jnt{PP}}\dot{\mathbf{r}}_{\jnt{PP, CM}}^\intercal\dot{\mathbf{r}}_{\jnt{PP, CM}} + m_{\jnt{MP}}\dot{\mathbf{r}}_{\jnt{MP, CM}}^\intercal\dot{\mathbf{r}}_{\jnt{MP, CM}} + m_{\jnt{DP}}\dot{\mathbf{r}}_{\jnt{DP, CM}}^\intercal\dot{\mathbf{r}}_{\jnt{DP, CM}}\right ].
 \end{equation}
 
 \subsection{Potential energy}
@@ -472,7 +499,7 @@ Ordering it around, moving all measured signals and known parameters to the left
     \implies z_{\jnt{L_a}} = \theta^*_{\jnt{L_a}} \Phi_{\jnt{L_a}}.
 \end{equation*}
 
-Hence we've transformed the system to a SPM like discussed in [\textbf{Add reference to Theory:SPM}]. We can do the same for the inertia of the rotor $J_m$. We'll start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
+Hence we've transformed the system to a SPM like discussed in \cref{eq:theory_control_static_parametric_model}. We can do the same for the inertia of the rotor $J_m$. We'll start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
 
 \begin{equation}
     \label{eq:motor_model_mechanical_laplace}
@@ -522,13 +549,13 @@ Combining \cref{eq:motor_model_electrical_filtered} and \cref{eq:motor_model_mec
 \end{equation*}
 
 
-Using the gradient method developed in \textbf{[Add reference to Theory: Gradient method]}, with 
+Using the gradient method developed in \cref{subsec:theory_gradient_method}, with 
 
 \begin{equation*}
     \lambda_{0, L_a} = 10, \quad \lambda_{0, J_m} = 0.1, \quad \lambda_{1, J_m} = 0.1,\quad \boldsymbol{\Gamma} = \begin{bmatrix}
     10 & 0 \\
     0 & 1000
-\end{bmatrix},
+\end{bmatrix}, \quad m_s^2 = 1,
 \end{equation*}
 
 \begin{equation*}
