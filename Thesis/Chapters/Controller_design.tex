@@ -4,7 +4,7 @@
 \section{Current controller}
 \label{sec:controller_design_current_controller}
 
-To help fascilitate the design of the position and torque controllers, we will first design a controller for the armature current $I_a$ with the armature voltage $E_a$. This will allow us to treat the armature current as a control input in the position control design, simplifying the dynamics significantly. As the dynamics of the armature current is so fast, the controller has to be as cheap as possible to compute. Hence, it will be designed as a simple proportional (P) controller, but with a feedforward (FF) term to account for the back EMF. Let's first consider the electrical dynamics of the motor from \cref{eq:motor_model_electrical_rewrite}:
+To help facilitate the design of the torque/force and position controllers, we will first design a controller for the armature current $I_a$ with the armature voltage $E_a$ as input. This will allow us to treat the armature current as a control input in the position control design, simplifying the dynamics significantly. In the actual system, the effective applied voltage will be set with \textit{pulse-width-modulation} (PWM). Therefore, we will assume that $E_a \in [-12, 12]\si{\volt}$. As the dynamics of the armature current is very fast, the controller has to be as cheap as possible to compute. Hence, it will be designed as a simple proportional (P) controller, but with a feedforward (FF) term to account for the back EMF. Let's first consider the electrical dynamics of the brushed DC motor from \cref{eq:motor_model_electrical_rewrite}:
 
 \begin{equation}
     \label{eq:controller_design_electrical_dynamics}
@@ -25,7 +25,7 @@ Substituting \cref{eq:controller_design_voltage_input} into \cref{eq:controller_
     L_a \frac{\mathrm{d}I_a(t)}{\mathrm{d}t} + R_a I_a(t) = K_p (r(t) - I_a(t)) \triangleq u(t).
 \end{equation}
 
-This controller is supposed to be ran in real time on a microcontroller. That way it won't have access to continuous time signals, but rather discrete time signals. Hence, we will need to discretize the controller for stability analysis and tuning. For this analysis we will assume that the dynamics of the motor are slow enough such that the feedforward term can be treated as a constant. This is a reasonable assumption since the feedforward term is based on the angular velocity, which changes relatively slowly compared to the armature current.
+This controller is supposed to be ran in real time on a microcontroller. That way it won't have access to continuous measurements, but rather discrete ones. Hence, we will need to discretize the controller for stability analysis and tuning. We'll assume that the dynamics of the motor are slow enough such that the feedforward term can be treated as a constant. This is a reasonable assumption since the feedforward term is based on the angular velocity, which changes relatively slowly compared to the armature current.
 
 \subsection{Discretization of current controller}
 Suppose the controller is ran with a update period of $T_s$. Assuming that the input voltage $E_a$ is held constant between sampling times, i.e.,

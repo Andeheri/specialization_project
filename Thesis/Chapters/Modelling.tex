@@ -597,7 +597,7 @@ while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second
 \subsection{Mass-spring-damper load}%
 \label{subsec:mass_spring_model}
 
-In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, in addition to that the configuration of the whiffle tree is unkown, the full finger model isn't observable, and can't be used for position control design. Instead, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
+In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, in addition to that the configuration of the whiffle tree is unkown, the full finger model isn't observable, and can't be used for position control design. For analysis, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
 
 \begin{equation}
     \tau_l = J \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + c \frac{\mathrm{d}\theta}{\mathrm{d}t} + k (\theta - \theta_{eq}),
@@ -610,7 +610,7 @@ where $J$ is the 'total' inertia of the finger, $c$ is the 'total' damping coeff
     (J_m + J) \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + (B_m + c) \frac{\mathrm{d}\theta}{\mathrm{d}t} + k \theta = K_t I_a + k \theta_{eq}
 \end{equation}
 
-\subsection{State-space model of brushed DC motor with load}%
+\subsection{State-space model of brushed DC motor with simplified finger load}%
 \label{subsec:state_space_model_load}
 
 To analyze the position controller for the motor with load, discussed further in \cref{sec:mrac_implementation}, we need to express the dynamics in \cref{eq:motor_model_mechanical_load} in state-space representation, as shown in \cref{subsec:theory_control_state_space}. Assuming that $I_a$ can be treated as an input, explained in \cref{sec:controller_design_current_controller}, and defining $\omega\triangleq\frac{\mathrm{d}\theta}{\mathrm{d}t}$, we can rewrite the \cref{eq:motor_model_mechanical_load} and as:
@@ -655,24 +655,24 @@ Written in state-space form, we have:
     \implies \frac{\mathrm{d}}{\mathrm{d}t}\mathbf{x} = \mathbf{A}\mathbf{x} + \mathbf{B}\mathbf{u} + \mathbf{d}.
 \end{equation*}
 
-In addition we have an encoder measuring $\theta$. Hence the output of the system is given by:
+% In addition we have an encoder measuring $\theta$. Hence the output of the system is given by:
 
-\begin{equation}
-    \label{eq:output_equation}
-    \begin{aligned}
-        \underbrace{
-    \begin{bmatrix}
-        \theta
-    \end{bmatrix}}_{\textstyle \mathbf{y}} &=
-    \underbrace{
-    \begin{bmatrix}
-        1 & 0
-    \end{bmatrix}}_{\textstyle \mathbf{C}}
-    \underbrace{
-    \begin{bmatrix}
-        \theta \\
-        \omega
-    \end{bmatrix}}_{\textstyle \mathbf{x}} \\
-    \implies \mathbf{y} &= \mathbf{C}\mathbf{x}.
-    \end{aligned}
-\end{equation}
+% \begin{equation}
+%     \label{eq:output_equation}
+%     \begin{aligned}
+%         \underbrace{
+%     \begin{bmatrix}
+%         \theta
+%     \end{bmatrix}}_{\textstyle \mathbf{y}} &=
+%     \underbrace{
+%     \begin{bmatrix}
+%         1 & 0
+%     \end{bmatrix}}_{\textstyle \mathbf{C}}
+%     \underbrace{
+%     \begin{bmatrix}
+%         \theta \\
+%         \omega
+%     \end{bmatrix}}_{\textstyle \mathbf{x}} \\
+%     \implies \mathbf{y} &= \mathbf{C}\mathbf{x}.
+%     \end{aligned}
+% \end{equation}
