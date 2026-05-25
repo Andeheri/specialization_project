@@ -102,7 +102,7 @@ The rotational kinetic energy of the system is rather straightforward to derive,
 
 The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the position of the center of mass of each link and taking the time derivative. To find the position of the center of mass, we'll use homogenous transformations, as described in \cref{subsec:theory_modelling_homogenous_transformations}. 
 
-Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is alligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is alligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is alligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is alligned with the distal phalanx. The homogenous transformations between these frames can be expressed as:
+Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is alligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is alligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is alligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is alligned with the distal phalanx. A visualization of the frames is shown in \cref{fig:modelling_finger_model_frames}. The homogenous transformations between these frames can be expressed as:
 
 \begin{equation}
     \label{eq:modelling_homogenous_transformations}
@@ -121,6 +121,13 @@ Let's start by defining frames for moving between the links. We'll define the st
     \end{bmatrix}.
     \end{aligned}
 \end{equation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{../Figures/Modelling/finger_variables_visualization_test.pdf}
+    \caption{Visualization of the finger model, with three revolute joints, where the relative joint angles, and the lengths of each phalanx are labeled, with frames.}
+    \label{fig:modelling_finger_model_frames}
+\end{figure}
 
 Assuming the the center of mass of each link is located at the midpoint of the link, we can express the position of the center of mass of each link in the world frame as:
 

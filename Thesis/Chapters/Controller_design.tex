@@ -15,14 +15,14 @@ Given the time varying reference current $r(t)$, we can design the input voltage
 
 \begin{equation}
     \label{eq:controller_design_voltage_input}
-    E_a(t) = \underbrace{K_b \frac{\mathrm{d}\theta(t)}{\mathrm{d}t}}_{\text{Feedforward term}} + \;\underbrace{L_a K_p \left(r(t) - I_a(t)\right)}_{\text{P controller}}.
+    E_a(t) = \underbrace{K_b \frac{\mathrm{d}\theta(t)}{\mathrm{d}t}}_{\text{Feedforward term}} + \;\underbrace{K_p \left(r(t) - I_a(t)\right)}_{\text{P controller}}.
 \end{equation}
 
 Substituting \cref{eq:controller_design_voltage_input} into \cref{eq:controller_design_electrical_dynamics}, we get:
 
 \begin{equation}
     \label{eq:controller_design_current_dynamics}
-    \frac{\mathrm{d}I_a(t)}{\mathrm{d}t} + R_a I_a(t) = K_p (r(t) - I_a(t)) \triangleq u(t).
+    L_a \frac{\mathrm{d}I_a(t)}{\mathrm{d}t} + R_a I_a(t) = K_p (r(t) - I_a(t)) \triangleq u(t).
 \end{equation}
 
 This controller is supposed to be ran in real time on a microcontroller. That way it won't have access to continuous time signals, but rather discrete time signals. Hence, we will need to discretize the controller for stability analysis and tuning. For this analysis we will assume that the dynamics of the motor are slow enough such that the feedforward term can be treated as a constant. This is a reasonable assumption since the feedforward term is based on the angular velocity, which changes relatively slowly compared to the armature current.
@@ -39,21 +39,21 @@ the dynamics in \cref{eq:controller_design_current_dynamics} then becomes:
 
 \begin{equation}
     \label{eq:controller_design_current_interval_dynamics}
-    \frac{\mathrm{d}I_a(\tau)}{\mathrm{d}\tau} + R_a I_a(\tau) = u[k], \quad \tau = t - k T_s \in [0, T_s].
+    L_a \frac{\mathrm{d}I_a(\tau)}{\mathrm{d}\tau} + R_a I_a(\tau) = u[k], \quad \tau = t - k T_s \in [0, T_s].
 \end{equation}
 
-To solve it, let's multiply by the integrating factor $e^{R_a \tau}$, which gives:
+To solve it, let's multiply by the integrating factor $e^{\frac{R_a}{L_a} \tau}$, which gives:
 
 \begin{equation}
     \label{eq:controller_design_current_integrating_factor}
-    e^{R_a \tau} \left[\frac{\mathrm{d}I_a(\tau)}{\mathrm{d}\tau} + R_a I_a(\tau)\right] = u[k] e^{R_a \tau}.
+    e^{\frac{R_a}{L_a} \tau} \left[L_a \frac{\mathrm{d}I_a(\tau)}{\mathrm{d}\tau} + R_a I_a(\tau)\right] = u[k] e^{\frac{R_a}{L_a} \tau}.
 \end{equation}
 
 Notice how this can be rewritten as:
 
 \begin{equation}
     \label{eq:controller_design_current_integrating_factor_rewrite}
-    \frac{\mathrm{d}}{\mathrm{d}\tau} \left(e^{R_a \tau} I_a(\tau)\right) = u[k] e^{R_a \tau}.
+    L_a \frac{\mathrm{d}}{\mathrm{d}\tau} \left(e^{\frac{R_a}{L_a} \tau} I_a(\tau)\right) = u[k] e^{\frac{R_a}{L_a} \tau}.
 \end{equation}
 
 Integrating both sides of \cref{eq:controller_design_current_integrating_factor_rewrite} with respect to $\tau$, over the entire interval from $0$ to $T_s$, we get the discretized dynamics of the current controller:
@@ -61,9 +61,9 @@ Integrating both sides of \cref{eq:controller_design_current_integrating_factor_
 \begin{equation}
     \label{eq:controller_design_discretized}
     \begin{aligned}
-        [e^{R_a \tau} I_a(\tau)]_{\tau = 0}^{\tau = T_s} &= u[k] \int_0^{T_s} e^{R_a \tau} \mathrm{d}\tau,\\
-        \implies e^{R_a T_s} \underbrace{I_a(T_s)}_{I_a[k+1]} - \underbrace{I_a(0)}_{I_a[k]} &= u[k] \frac{e^{R_a T_s} - 1}{R_a},\\
-        \implies I_a[k+1] &= \underbrace{e^{-R_a T_s}}_{\triangleq a} I_a[k] + u[k] \underbrace{\frac{1 - e^{-R_a T_s}}{R_a}}_{\triangleq b},\\
+        \left[e^{\frac{R_a}{L_a} \tau} I_a(\tau)\right]_{\tau = 0}^{\tau = T_s} &= \frac{u[k]}{L_a} \int_0^{T_s} e^{\frac{R_a}{L_a} \tau} \mathrm{d}\tau,\\
+        \implies e^{\frac{R_a}{L_a} T_s} \underbrace{I_a(T_s)}_{I_a[k+1]} - \underbrace{I_a(0)}_{I_a[k]} &= u[k] \frac{e^{\frac{R_a}{L_a} T_s} - 1}{R_a},\\
+        \implies I_a[k+1] &= \underbrace{e^{-\frac{R_a}{L_a} T_s}}_{\triangleq a} I_a[k] + u[k] \underbrace{\frac{1 - e^{-\frac{R_a}{L_a} T_s}}{R_a}}_{\triangleq b},\\
         \implies I_a[k+1] &= a I_a[k] + b u[k].
     \end{aligned}
 \end{equation}
@@ -97,8 +97,8 @@ Clearly, \cref{eq:controller_design_current_dynamics_z_transform} has a pole at 
 \begin{equation}
     \label{eq:controller_design_current_stability_condition}
     \begin{aligned}
-        |a - b K_p| &< 1 \implies \left|e^{-R_a T_s} - K_p \frac{1 - e^{-R_a T_s}}{R_a}\right| < 1,\\
-        \implies K_p &< R_a \frac{1 + e^{-R_a T_s}}{1 - e^{-R_a T_s}} \triangleq K_{p,\text{max}}(T_s).
+        |a - b K_p| &< 1 \implies \left|e^{-\frac{R_a}{L_a} T_s} - K_p \frac{1 - e^{-\frac{R_a}{L_a} T_s}}{R_a}\right| < 1,\\
+        \implies K_p &< R_a \frac{1 + e^{-\frac{R_a}{L_a} T_s}}{1 - e^{-\frac{R_a}{L_a} T_s}} \triangleq K_{p,\text{max}}(T_s).
     \end{aligned}
 \end{equation}
 
@@ -121,7 +121,7 @@ Hence to eliminate the steady-state error, we can choose the reference to be:
 \subsection{Simulation of current controller}
 \label{subsec:current_simulation}
 
-To evaluate the controller, we will simulate it applied to the motor model developed in \cref{sec:brushed_dc_motor_model}. Using $K_p=\frac{1}{2}K_{p,\text{max}}(T_s)$, where the reference current is a step input of $1$ A, and scaled with regards to \cref{eq:controller_design_current_reference_tuning}. Additionally there is a saturation put on $E_a=\pm\SI{12}{\volt}$. \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_speed} and \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed} shows a simulation of the P+FF controller aswell as just the P controller, with $T_s = \SI{0.2}{\milli\second}$, where the motor is initially spinning at $\omega_0 = \SI{5}{\radian\per\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$, respectively. \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms} shows the simulation of the P+FF controller with and without noise to the measurement of $I_a$, with $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$, respectively. The noise is a zero-mean Gaussian noise with a standard deviation of $\sigma_{\jnt{I_a}} = \SI{50}{\milli\ampere}$, which is higher than is expected for the system, but it will help us evaluate the robustness of the controller.
+To evaluate the controller, we will simulate it applied to the motor model developed in \cref{sec:brushed_dc_motor_model}. Using $K_p=\frac{1}{2}K_{p,\text{max}}(T_s)$, where the reference current is a step input of $1$ A, and scaled with regards to \cref{eq:controller_design_current_reference_tuning}. Additionally there is a saturation put on $E_a=\pm\SI{12}{\volt}$. \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_speed} and \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed} shows a simulation of the P+FF controller aswell as just the P controller, with $T_s = \SI{0.2}{\milli\second}$, where the motor is initially spinning at $\omega_0 = \SI{5}{\radian\per\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$, respectively. \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms} shows the simulation of the P+FF controller with and without noise to the measurement of $I_a$, with $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$, respectively. The noise is a zero-mean Gaussian noise with a standard deviation of $\sigma_{\jnt{I_a}} = \SI{50}{\milli\ampere}$, which is higher than is expected for the system, but it will help us evaluate the robustness of the controller. \cref{fig:controller_design_current_controller_simulation_small_Jm} shows the simulation of the P+FF controller with a smaller motor inertia $J_m=\SI{0.5}{\gram\metre\squared}$, for the different sampling periods $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$. 
 
 \begin{figure}[htbp]
     \centering
@@ -137,10 +137,10 @@ To evaluate the controller, we will simulate it applied to the motor model devel
 \begin{figure}[htbp]
     \centering
     \subcaptionbox{P+FF controller.\label{fig:controller_design_current_controller_simulation_pff_no_speed}}{%
-        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_Ts_0.2ms.pdf}}
+        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_Ts_0.2ms_long.pdf}}
     \hfill
     \subcaptionbox{P controller.\label{fig:controller_design_current_controller_simulation_p_no_speed}}{%
-        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_Ts_0.2ms.pdf}}
+        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_Ts_0.2ms_long.pdf}}
     \caption{Armature current step response for discrete-time P+FF and P controllers tracking a $\SI{1}{\ampere}$ reference, with $T_s = \SI{0.2}{\milli\second}$ and initial motor speed $\omega_0 = \SI{0}{\radian\per\second}$.}
     \label{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed}
 \end{figure}
@@ -167,18 +167,29 @@ To evaluate the controller, we will simulate it applied to the motor model devel
     \label{fig:controller_design_current_controller_simulation_noise_1ms}
 \end{figure}
 
+\begin{figure}[htbp]
+    \centering
+    \subcaptionbox{$T_s=\SI{0.2}{\milli\second}$.\label{fig:controller_design_current_controller_simulation_small_Jm_0.2ms}}{%
+        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_Ts_0.2ms_small_Jm.pdf}}
+    \hfill
+    \subcaptionbox{$T_s=\SI{1.0}{\milli\second}$.\label{fig:controller_design_current_controller_simulation_small_Jm_1.0ms}}{%
+        \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_Ts_1.0ms_small_Jm.pdf}}
+    \caption{Effect of sampling time $T_s$ on the armature current response with a smaller motor inertia $J_m$.}
+    \label{fig:controller_design_current_controller_simulation_small_Jm}
+\end{figure}
+
 \subsection{Evaluation of controller}
 
-When the motor is starting from still, both the P+FF and P controllers are able to reach the target current fast. But as the motor picks up speed, the back-EMF becomes significant, and the P controller struggles to keep up, and the current starts to deviate from the reference current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_no_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_no_speed}. When the motor is already spinning at a high speeds, the differences between the two controllers becomes even more significant. At no point does the P controller reach its target current. In fact, it deviates more and more over time, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_with_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_with_speed}.
+When the motor is starting from rest, both the P+FF and P controllers are able to reach the target current fast. However, as the motor picks up speed, the back-EMF becomes significant, and the P controller is no longer able to fully compensate for the induced voltage, and the current starts to deviate from the reference current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_no_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_no_speed}. Note that the observed effect of the increasing back-EMF could be more or less significant in the actual system, since the motor inertia $J_m$ is only based on similar motors, and not from the actual motor. If the true inertia is smaller, the observed effect would be much greater. When the motor is already spinning at a high speeds, the differences between the two controllers becomes even more significant. At no point does the P controller reach its target current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_with_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_with_speed}.
 
-As can be seen in \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms}, the added noise to the current measurtements doesn't really affect the stability of the controller. The current oscillates slightly when there's noise present, compared the the noise-free. There is however a clear differewnce between longer and shorter update periods. With a longer update period of $T_s = \SI{1.0}{\milli\second}$, the current gets a slight steady-state-error, which is not present with the shorter update period of $T_s = \SI{0.2}{\milli\second}$. The reason for this is that the assumption of a constant speed between updates is less valid with a longer update period, which causes the feedforward term to be less accurate, which in turn causes the steady-state error. With a shorter update period, the assumption of a constant speed is more valid, which allows the feedforward term to be more accurate, which in turn allows the controller to track the reference current better. 
+As can be seen in \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms}, the added noise to the current measurements doesn't really affect the stability of the controller. The current oscillates slightly when there's noise present, compared to without. When considering the motor inertia to be smaller, shown in \cref{fig:controller_design_current_controller_simulation_small_Jm}, a longer update period of $T_s = \SI{1.0}{\milli\second}$ results in the current getting a slight steady-state-error, which is not present with the shorter update period of $T_s = \SI{0.2}{\milli\second}$. This is likely due to the assumption of constant velocity between samples being less accurate for longer sampling times. This causes the feedforward term to be less accurate, which in turn causes a steady-state error. With a shorter update period, the assumption of a constant speed is more valid, which allows the feedforward term to be more accurate, which in turn enables the controller to track the reference current better. 
 
 Overall, the P+FF controller shows promising results for controlling the armature current in our system. Due to the saturation in the voltage of $E_a=\pm\SI{12}{\volt}$, there is a maximum rate of change for the current. During simulation it was found to be $\dot{I_a}_{\jnt{\text{max}}}\approx\SI{2.0}{\kilo\ampere\per\second}$, when the motor was starting from still, which is more or less instantaneous seen from the dynamics of the mechanical system. Hence, we will treat the armature current as a control input for further control design.
 
 \section{Torque control}
 \label{sec:controller_design_torque_control}
 
-When the hand interracts with objects, trying to control the position of the hand becomes irrelevant, as the hand will be constrained by the object. Instead, we want to control the torque generated by the motor, which in turn will allow us to control the force applied to the object.
+When the hand interacts with objects, trying to control the position of the hand becomes irrelevant, as the hand will be constrained by the object. Instead, we want to control the torque generated by the motor, which in turn will allow us to control the force applied to the object.
 
 
 When grasping an object, assuming the object is rigid and that the cable is inelastic, the angular velocity and acceleration of the motor will be $\frac{\mathrm{d}\theta}{\mathrm{d}t} \equiv 0$ and $\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} \equiv 0$, respectively. Based on \cref{eq:motor_model_mechanical_rewrite}, this results in the following relation:
