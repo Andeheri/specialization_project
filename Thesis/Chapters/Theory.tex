@@ -5,7 +5,7 @@
 \section{Anatomy}%
 \label{sec:theory_anatomy}
 
-The hand is a complex biomechanical system, comprised of many different bones, muscles, tendons, and ligaments. To explain different aspects of the hand in relation to one another, we use \textit{anatomical terminology} [\cite{AnatomicalTerminologySEER}], or more specifically \textit{anatomical directional terms}. Additionally when describing actions of muscles upon the skeleton, we use \textit{anatomical terms of movement} [\cite{TermsOfMovementTeachMeAnatomy}].
+The hand is a complex biomechanical system. To explain different aspects of the hand in relation to one another, we use \textit{anatomical terminology} [\cite{AnatomicalTerminologySEER}], or more specifically \textit{anatomical directional terms}. Additionally when describing actions of muscles upon the skeleton, we use \textit{anatomical terms of movement} [\cite{TermsOfMovementTeachMeAnatomy}].
 
 \subsection{Anatomical directional terms}%
 \label{subsec:theory_anatomical_directional_terms}
@@ -77,7 +77,7 @@ At each of the joints, there are collateral ligaments that provide stability. Fo
 \subsection{Euler-Lagrange equations}%
 \label{subsec:theory_modelling_euler_lagrange_equations}
 
-The Euler-Lagrange equations are a set of second-order ordinary differential equations that describe the dynamics of a system. They are derived using the total potential and kinetic energy of the system, denoted by $V$ and $T$. Together, they form the Lagrangian of the system, denoted by $\mathcal{L}$, which is defined as:
+The Euler-Lagrange equations are a set of second-order ordinary differential equations that describe the dynamics of a system. They are derived using the total potential and kinetic energy of the system, denoted by $V$ and $T$, respectively. Together, they form the Lagrangian of the system, denoted by $\mathcal{L}$, which is defined as:
 
 \begin{equation}
     \mathcal{L} = T - V.
@@ -117,7 +117,7 @@ Given a translation vector from frame $i$ to frame $j$, written in terms of fram
     \end{bmatrix}.
 \end{equation}
 
-Points represented in terms of homogenous transformations are represented as a 3D vector, where the first two elements represent the coordinates of the point in the plane, and the third element is always $1$. For example, a point $\mathbf{p}_n$ in frame $n$ with coordinates $(x,y)$ can be represented as:
+2D vectors represented in terms of homogenous transformations are defined as 3D vectors, where the first two elements represent the coordinates in the frame, and the third element is always $1$. For example, a point $\mathbf{p}_n$ in frame $n$ can be represented as:
 
 \begin{equation}
     \mathbf{p}_n = \begin{bmatrix}
@@ -153,10 +153,10 @@ Given a point $\mathbf{p}_n$ in frame $n$, we can express it in frame $1$ as:
 \subsection{Discrete-time system analysis}
 \label{subsec:theory_discrete_time_system_analysis}
 
-When realizing a controller on a digital computer, the system is often modelled as a discrete-time system, as the samples are taken at discrete time steps. A sample of state $y$ at time step $k$ is denoted as $y[k]$. The sampling time, denoted by $T_s$, is the time between two consecutive samples, such that if $y[k] = y(t)$, then $y[k+1] = y(t + T_s)$. Usually the input of the system is denoted $u[k]$. Often the discrete-system can be expressed as a \textit{auto-regressive} (AR) model, where the current state of the system is given by a linear combination of the previous states and inputs, as shown in the following equation:
+When realizing a controller on a digital computer, the relevant system is often modelled as a discrete-time system, as the samples are taken at discrete time steps. A sample of state $y$ at time step $k$ is denoted as $y[k]$. The sampling time, denoted by $T_s$, is the time between two consecutive samples, such that if $y[k] = y(t)$, then $y[k+1] = y(t + T_s)$. Usually the input of the system is denoted $u[k]$. Sometimes the discrete-time system can be expressed as a \textit{auto-regressive} (AR) model, where the current state of the system is given by a linear combination of the previous states and inputs, as shown in the following equation:
 
 \begin{equation}
-    y[k] = \sum_{i=1}^{n} a_i y[k-i] + \sum_{j=1}^{m} b_j u[k-j],
+    y[k] = \sum_{i=1}^{n} a_i y[k-i] + \sum_{j=1}^{m} b_j u[k-j].
 \end{equation}
 
 To analyze the stability of a discrete-time system, we can use the \textit{z-transform}. 
@@ -185,7 +185,7 @@ $z$-domain as:
     \frac{\sum_{j=1}^{m} b_j z^{-j}}
     {1 - \sum_{i=1}^{n} a_i z^{-i}},
 \end{equation}
-where $h(z)$ denotes the system transfer function. For a causal discrete-time
+where $h(z)$ denotes the system's transfer function. For a causal discrete-time
 system, stability requires all poles of $h(z)$ to lie strictly inside the unit
 circle, i.e.,
 \begin{equation}
@@ -194,7 +194,7 @@ circle, i.e.,
 
 \subsection{State-Space representation}%
 \label{subsec:theory_control_state_space}
-A way to express a n'th order ordinary differential equation (ODE) is to express it as a system of n first order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for linear time-invariant (LTI) systems is the following:
+A way to express a n'th order ordinary differential equation (ODE) is as a system of n first order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for \textit{linear time-invariant} (LTI) systems is the following:
 \begin{equation}
 \label{eq:theory_state_space_representation}
 \begin{aligned}
@@ -213,20 +213,11 @@ A way to express a n'th order ordinary differential equation (ODE) is to express
 \end{aligned}
 \end{equation}
 
-Here, $\mathbf{x}(t)$ is the state vector, which contains all the information about the system at time $t$. $\mathbf{u}(t)$ is the input vector at time $t$. $\mathbf{y}(t)$ is the output vector, which contains all the measurements of the system at time $t$. $\mathbf{d}(t)$ is a disturbance vector.
-
-\subsection{Controllability}%
-\label{subsec:theory_control_controllability}
-A system is said to be \textit{controllable} if it is possible to drive the state of the system from any initial state to any desired final state in finite time, using an appropriate control input. For a LTI system, controllability can be determined by the rank of the controllability matrix $\mathcal{C}$, defined as:
-\begin{equation}
-    \mathcal{C} = [\mathbf{B}, \mathbf{A}\mathbf{B}, \mathbf{A}^2\mathbf{B}, \ldots, \mathbf{A}^{n-1}\mathbf{B}].
-\end{equation}
-
-If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, then the system is controllable.
+Here, $\mathbf{x}(t)$ is the state vector, which contains all the information about the system at time $t$. $\mathbf{u}(t)$ is the input vector at time $t$. $\mathbf{d}(t)$ is a disturbance vector. $\mathbf{y}(t)$ is the output vector, which contains all the measurements of the system at time $t$.
 
 \subsection{Static parametric model (SPM)}%
 \label{subsec:theory_control_static_parametric_model}
-A \textit{static parametric model} (SPM) is a special form of a dynamical system relating the input and output of a system when there are unknown parameters. \cite[p. 13]{ioannouAdaptiveControlTutorial2006} defines a SPM as follows:
+A \textit{static parametric model} (SPM) is a special form of a dynamical system relating the input and output of a system when there are unknown parameters present. \cite[p. 13]{ioannouAdaptiveControlTutorial2006} defines a SPM as follows:
 
 \begin{equation}
     \label{eq:theory_control_static_parametric_model}
@@ -235,7 +226,7 @@ A \textit{static parametric model} (SPM) is a special form of a dynamical system
 
 where $z \in \mathbb{R}$, $\boldsymbol{\phi} \in \mathbb{R}^n$ are available for measurement, while $\boldsymbol{\theta}^* \in \mathbb{R}^n$ is the unknown parameter vector. 
 
-\subsection{Gradient method for estimating unkown parameters}
+\subsection{Gradient method for estimating unknown parameters}
 \label{subsec:theory_gradient_method}
 Given a SPM, we can use the \textit{gradient method} to estimate the unknown parameters. \cite[p. 180--185]{ioannouRobustAdaptiveControl2012} defines the gradient method as follows. Given the SPM in \cref{eq:theory_control_static_parametric_model}, we can define the estimate of $z$, $\hat{z}$, as:
 
@@ -258,15 +249,24 @@ where $m_s^2$ is defined such that $\phi/m_s$ is bounded. Defining the adaptive 
 \cite{ioannouRobustAdaptiveControl2012} proves that $\mathbf{\theta} \to \mathbf{\theta}^*$ as $t \to \infty$, given that $\boldsymbol{\phi}$ is persistently exciting (PE). A signal being PE means that there exists a $T > 0$ and $\alpha > 0$ such that:
 
 \begin{equation}
-    \int_{t}^{t+T} \boldsymbol{\phi}(\tau) \boldsymbol{\phi}^\intercal(\tau) \mathrm{d}\tau \geq \alpha \mathbf{I}, \quad \forall t \geq 0.
+    \int_{t}^{t+T} \boldsymbol{\phi}(\tau) \boldsymbol{\phi}^\intercal(\tau) \mathrm{d}\tau \geq \alpha T \mathbf{I}, \quad \forall t \geq 0.
 \end{equation}
 
-Essentially, this means that $\boldsymbol{\phi}$ must be sufficiently rich in frequency content, and cannot be a constant signal.
+Essentially, this means that $\boldsymbol{\phi}$ must be sufficiently rich in frequency content.
+
+\subsection{Controllability}%
+\label{subsec:theory_control_controllability}
+For a LTI system, controllability can be determined by the rank of the controllability matrix $\mathcal{C}$, defined as:
+\begin{equation}
+    \mathcal{C} = [\mathbf{B}, \mathbf{A}\mathbf{B}, \mathbf{A}^2\mathbf{B}, \ldots, \mathbf{A}^{n-1}\mathbf{B}].
+\end{equation}
+
+If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, the system $(\mathbf{A}, \mathbf{B})$ is said to be \textit{controllable}.
 
 \subsection{Model Reference Adaptive Control (MRAC)}%
 \label{subsec:theory_control_mrac}
 
-\textit{Model Reference Adaptive Control} (MRAC) is a control strategy that aims to make the output of a system follow the output of a reference model, even in the presence of uncertainties or disturbances. The following definition of MRAC is based on \textcite[325--327]{ioannouRobustAdaptiveControl2012}. 
+\textit{Model Reference Adaptive Control} (MRAC) is a control strategy that aims to make the output of a system follow the output of a reference model, even in the presence of parameter uncertainties. The following definition of MRAC is based on \textcite[325--327]{ioannouRobustAdaptiveControl2012}. 
 
 Given the nth order LTI-system in state-space form,
 
@@ -281,7 +281,7 @@ and the reference model,
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}_m(t) = \mathbf{A}_m\mathbf{x}_m(t) + \mathbf{B}_m\mathbf{r}(t), \quad \mathbf{x}_m(t) \in \mathbb{R}^n, \mathbf{r}(t) \in \mathbb{R}^m.
 \end{equation}
 
-The reference model and input $\mathrm{r}(t)$ are chosen so that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix, and $(\mathbf{A}, \mathbf{B})$ must be \textit{controllable} for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
+The reference model and input $\mathrm{r}(t)$ are chosen such that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix, and $(\mathbf{A}, \mathbf{B})$ must be \textit{controllable} for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
 
 \begin{equation}
     \label{eq:theory_control_ideal_mrac_input}
@@ -307,7 +307,7 @@ then the closed loop system becomes:
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = \mathbf{A}_m\mathbf{x}(t) + \mathbf{B}_m\mathbf{r}(t).
 \end{equation}
 
-Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same to \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. But for most cases, $\mathbf{A}$ and $\mathbf{B}$ are not known, which means that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
+Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same to \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. But for most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, which means that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
 
 \begin{equation}
     \label{eq:theory_control_mrac_input}
@@ -317,10 +317,10 @@ Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same to \cref{eq:theory
 
 \subsubsection*{Adaptive Law}
 
-Defining the tracking error $\mathbf{e}(t)$ as:
+Defining the tracking error $\boldsymbol{\epsilon}(t)$ as:
 
 \begin{equation}
-    \mathbf{e}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
+    \boldsymbol{\epsilon}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
 \end{equation}
 
 Solving for $\mathbf{P}$ for a $\mathbf{Q} =\mathbf{Q}^\intercal > 0$ in the Lyapunov equation:
@@ -333,9 +333,9 @@ we have the adaptive law:
 
 \begin{equation}
     \begin{aligned}
-        \dot{\mathbf{K}}(t) &= \mathbf{B}_m^\intercal \mathbf{P} \mathbf{e} \mathbf{x}^\intercal sgn(l), \\
-        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^\intercal \mathbf{P} \mathbf{e} \mathbf{r}^\intercal sgn(l).
+        \dot{\mathbf{K}}(t) &= \mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon} \mathbf{x}^\intercal sgn(l), \\
+        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon} \mathbf{r}^\intercal sgn(l).
     \end{aligned}
 \end{equation}
 
-\cite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\mathbf{e}(t)$ are bounded, and the tracking error $\mathbf{e}(t) \to 0$ as $t \to \infty$.
+\cite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\boldsymbol{\epsilon}(t)$ are bounded, and the tracking error $\boldsymbol{\epsilon}(t) \to 0$ as $t \to \infty$.

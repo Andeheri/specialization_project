@@ -4,9 +4,9 @@
 \section{Finger model}%
 \label{sec:finger_model}
 
-For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint doesn't have the same support-structure, so it's free to move side to side, but this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger is minimal.
+For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint has a different support-structure, that makes it free to move laterally when the finger is extended. But this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger should be minimal.
 
-For our model, we assume that the finger is composed of three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}.
+For the model, the phalanges will be modeleled as three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers at each joint. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}.
 
 \begin{figure}
     \centering
@@ -15,43 +15,49 @@ For our model, we assume that the finger is composed of three links, with three 
     \label{fig:modelling_finger_model}
 \end{figure}
 
-\begin{table}
+\begin{table}[htbp]
+    \centering
     \caption{Parameters used in the finger model.}
     \label{tab:finger_params}
-    \centering
-    \begin{tabular}{llccc}
+    \begin{tabular}{lccc}
         \toprule
-        Parameter & Link/joint & Symbol & Value & Unit \\
+        Parameter & Symbol & Value & Unit \\
+        \midrule
+
+        \multicolumn{4}{l}{\textbf{Phalanx parameters}} \\
         \midrule
         \multirow{3}{*}{Mass}
-            & PP & $m_{\jnt{PP}}$ & $20$ & \multirow{3}{*}{$\si{\gram}$} \\
-            & MP & $m_{\jnt{MP}}$ & $15$ & \\
-            & DP & $m_{\jnt{DP}}$ & $20$ & \\
+            & $m_{\jnt{PP}}$ & $20$ & \multirow{3}{*}{$\si{\gram}$} \\
+            & $m_{\jnt{MP}}$ & $15$ & \\
+            & $m_{\jnt{DP}}$ & $20$ & \\
         \midrule
         \multirow{3}{*}{Length}
-            & PP & $l_{\jnt{PP}}$ & $48$ & \multirow{3}{*}{$\si{\milli\metre}$} \\
-            & MP & $l_{\jnt{MP}}$ & $30$ & \\
-            & DP & $l_{\jnt{DP}}$ & $24$ & \\
+            & $l_{\jnt{PP}}$ & $48$ & \multirow{3}{*}{$\si{\milli\metre}$} \\
+            & $l_{\jnt{MP}}$ & $30$ & \\
+            & $l_{\jnt{DP}}$ & $24$ & \\
         \midrule
         \multirow{3}{*}{Radius}
-            & PP & $r_{\jnt{PP}}$ & $8.5$ & \multirow{3}{*}{$\si{\milli\metre}$} \\
-            & MP & $r_{\jnt{MP}}$ & $8.5$ & \\
-            & DP & $r_{\jnt{DP}}$ & $8.5$ & \\
+            & $r_{\jnt{PP}}$ & $8.5$ & \multirow{3}{*}{$\si{\milli\metre}$} \\
+            & $r_{\jnt{MP}}$ & $8.5$ & \\
+            & $r_{\jnt{DP}}$ & $8.5$ & \\
+
+        \midrule
+        \multicolumn{4}{l}{\textbf{Joint parameters}} \\
         \midrule
         \multirow{3}{*}{Equilibrium angle}
-            & MCP & $\varphi_{\jnt{MCP, eq}}$ & $\pi/6$ & \multirow{3}{*}{$\si{\radian}$} \\
-            & PIP & $\varphi_{\jnt{PIP, eq}}$ & $\pi/4$ & \\
-            & DIP & $\varphi_{\jnt{DIP, eq}}$ & $\pi/12$ & \\
+            & $\varphi_{\jnt{MCP},\mathrm{eq}}$ & $\pi/6$ & \multirow{3}{*}{$\si{\radian}$} \\
+            & $\varphi_{\jnt{PIP},\mathrm{eq}}$ & $\pi/4$ & \\
+            & $\varphi_{\jnt{DIP},\mathrm{eq}}$ & $\pi/12$ & \\
         \midrule
         \multirow{3}{*}{Stiffness coefficient}
-            & MCP & $k_{\jnt{MCP}}$ & $0.5$ & \multirow{3}{*}{$\si{\newton\metre\per\radian}$} \\
-            & PIP & $k_{\jnt{PIP}}$ & $0.5$ & \\
-            & DIP & $k_{\jnt{DIP}}$ & $0.5$ & \\
+            & $k_{\jnt{MCP}}$ & $0.5$ & \multirow{3}{*}{$\si{\newton\metre\per\radian}$} \\
+            & $k_{\jnt{PIP}}$ & $0.5$ & \\
+            & $k_{\jnt{DIP}}$ & $0.5$ & \\
         \midrule
         \multirow{3}{*}{Damping coefficient}
-            & MCP & $b_{\jnt{MCP}}$ & $0.05$ & \multirow{3}{*}{$\si{\newton\metre\second\per\radian}$} \\
-            & PIP & $b_{\jnt{PIP}}$ & $0.05$ & \\
-            & DIP & $b_{\jnt{DIP}}$ & $0.05$ & \\
+            & $b_{\jnt{MCP}}$ & $0.05$ & \multirow{3}{*}{$\si{\newton\metre\second\per\radian}$} \\
+            & $b_{\jnt{PIP}}$ & $0.05$ & \\
+            & $b_{\jnt{DIP}}$ & $0.05$ & \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -91,7 +97,7 @@ The kinetic energy will be the sum of the kinetic energy of each link, which can
 
 \subsection*{Rotational kinetic energy}
 
-The rotational kinetic energy of the system is rather straightforward to derive, as the angular velocity of each link is equal to the time derivative of the joint angle. Since the angles are relative, the total angular velocity of each link is the sum of the time derivatives of the joint angles up to that link. Hence, the rotational kinetic energy can be expressed as:
+The rotational kinetic energy of the system is rather straightforward to derive. Since the angles are relative, the total angular velocity of each link is the sum of the time derivatives of the joint angles up to that link. Hence, the total rotational kinetic energy can be expressed as:
 
 \begin{equation}
     \label{eq:modelling_rot_kinetic_energy}
@@ -100,7 +106,7 @@ The rotational kinetic energy of the system is rather straightforward to derive,
 
 \subsection*{Translational kinetic energy}
 
-The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the position of the center of mass of each link and taking the time derivative. To find the position of the center of mass, we'll use homogenous transformations, as described in \cref{subsec:theory_modelling_homogenous_transformations}. 
+The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the center of mass of each link and taking the time derivative. To find the center of mass, we'll use homogenous transformations, as described in \cref{subsec:theory_modelling_homogenous_transformations}. 
 
 Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is alligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is alligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is alligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is alligned with the distal phalanx. A visualization of the frames is shown in \cref{fig:modelling_finger_model_frames}. The homogenous transformations between these frames can be expressed as:
 
@@ -124,12 +130,12 @@ Let's start by defining frames for moving between the links. We'll define the st
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{../Figures/Modelling/finger_variables_visualization_test.pdf}
+    \includegraphics[width=1.0\textwidth]{../Figures/Modelling/finger_variables_visualization_test.pdf}
     \caption{Visualization of the finger model, with three revolute joints, where the relative joint angles, and the lengths of each phalanx are labeled, with frames.}
     \label{fig:modelling_finger_model_frames}
 \end{figure}
 
-Assuming the the center of mass of each link is located at the midpoint of the link, we can express the position of the center of mass of each link in the world frame as:
+Given the assumption of uniform mass distribution, the center of mass of each link is located at the midpoint of the link, expressed in world frame as:
 
 \begin{equation}
     \label{eq:modelling_com_positions}
@@ -152,7 +158,7 @@ Assuming the the center of mass of each link is located at the midpoint of the l
     \end{aligned}
 \end{equation}
 
-Extracting the x and y components of the position, defining them as $\mathbf{r}_{\jnt{PP, CM}}$, $\mathbf{r}_{\jnt{MP, CM}}$, and $\mathbf{r}_{\jnt{DP, CM}}$, we can take the time derivative to find the linear velocity of each center of mass, which can then be used to calculate the translational kinetic energy as:
+Extracting the x and y components of the position, defining them as $\mathbf{r}_{\jnt{PP, CM}}$, $\mathbf{r}_{\jnt{MP, CM}}$, and $\mathbf{r}_{\jnt{DP, CM}}$, we can take the time derivative to find the linear velocity of each center of mass, which can then be used to calculate the total translational kinetic energy as:
 
 \begin{equation}
     \label{eq:modelling_trans_kinetic_energy}
@@ -161,16 +167,11 @@ Extracting the x and y components of the position, defining them as $\mathbf{r}_
 
 \subsection{Potential energy}
 
-For the potential energy one would normally consider the gravitational potential energy. However, since the finger is relatively light and the motion during gripping tasks is mostly in the horizontal plane, we'll omit the gravitational potential energy for simplicity. Also, for clarity we'll model the torsional springs as generalized forces, instead of including them in the potential energy. Hence, the potential energy of the system can be expressed as:
-
-\begin{equation}
-    \label{eq:modelling_potential_energy}
-    V = 0.
-\end{equation}
+For the potential energy, one would normally consider the gravitational potential energy. However, since the finger is relatively light and the motion during gripping tasks is mostly transverse to gravity, we'll omit the gravitational potential energy for simplicity. For clarity, we'll model the torsional springs as generalized forces, instead of including them in the potential energy. Hence, the potential energy of the system can be expressed as $V = 0$.
 
 \subsection{Generalized forces}
 
-The generalized forces in our system will be the torques from the torsional springs and dampers, aswell as the torques from the cable pulling on the finger, and other external torques when the finger interacts with objects. The torques from the torsional springs can be expressed as:
+The generalized forces in our system will be the torques from the torsional springs, $\boldsymbol{\tau_{\text{spring}}}$, and dampers, $\boldsymbol{\tau_{\text{damper}}}$, as well as the torques from the cable pulling on the finger, $\boldsymbol{\tau_{\text{cable}}}$, and other external torques when the finger interacts with objects, $\boldsymbol{\tau_{\text{ext}}}$. The torques from the torsional springs can be expressed as:
 
 \begin{equation}
     \label{eq:modelling_spring_torques}
@@ -224,7 +225,7 @@ The total generalized forces can then be expressed as:
 
 \subsection{Rigid-body dynamics}
 
-For rigid-body mechanical systems, like the one we're modelling, the Euler-Lagrange equations can be expressed in matrix form as (\textbf{Add reference to theory: Rigid-body dynamics}):
+For rigid-body mechanical systems, like the one we're modelling, the Euler-Lagrange equations can be written in matrix form as:
 
 \begin{equation}
     \label{eq:modelling_euler_lagrange_matrix_form}
@@ -338,7 +339,7 @@ where
     \end{tabular}
 \end{table}
 
-Inserting all the results above, and solving for $\ddot{\mathbf{q}}$, we can express the equations of motion of our system as:
+Inserting all the results above and solving for $\ddot{\mathbf{q}}$, we can express the equations of motion of our system as:
 
 \begin{equation}
     \label{eq:modelling_equations_of_motion}
@@ -347,7 +348,7 @@ Inserting all the results above, and solving for $\ddot{\mathbf{q}}$, we can exp
 
 \section{Brushed DC Motor model}%
 \label{sec:brushed_dc_motor_model}
-In our system we're using a $\SI{12}{\volt}$ Brushed DC motor from Pololu \parencite{Pololu751}. The dynamical model is based on \cite{rahmanMathematicalModelBrushed2021}. The circuit diagram of a brushed DC motor is shown in \cref{fig:motor_circuit}. \cref{eq:motor_model_mechanical} describes the mechanical dynamics of the motor, and \cref{eq:motor_model_electrical} describes the electrical dynamics of the motor, defined as:
+In our system we're using a $\SI{12}{\volt}$ Brushed DC motor from Pololu \parencite{Pololu751}. The dynamical model is based on \cite{rahmanMathematicalModelBrushed2021}. The circuit diagram of the brushed DC motor is shown in \cref{fig:motor_circuit}. \cref{eq:motor_model_mechanical} describes the mechanical dynamics of the motor, and \cref{eq:motor_model_electrical} describes the electrical dynamics of the motor, defined as:
 
 \begin{align}%
     \label{eq:motor_model_mechanical}
@@ -414,7 +415,7 @@ In our system we're using a $\SI{12}{\volt}$ Brushed DC motor from Pololu \paren
     \label{fig:motor_circuit}
 \end{figure}
 
-Here, $\theta$ defines the angle of the motor. The torque generated by the motor is given by $\tau_m = K_t I_a$, where $K_t$ is the torque constant of the motor. The load torque $\tau_l$ represents the torque exerted by the finger on the motor through the cable, as well as friction between the motor and the finger. The friction within the rotor of the motor is modeled with $B_m \frac{\mathrm{d} \theta}{\mathrm{d}t}$, where $B_m$ is a constant friction coefficient. The inertia of the rotor is given by $J_m$. The back electromotive force (EMF) is given by $E_b = K_b \frac{\mathrm{d} \theta}{\mathrm{d}t}$, where $K_b$ is the back EMF constant of the motor. The armature voltage $E_a$ is the control input to the system. $R_a$ and $L_a$ are the armature resistance and inductance, respectively. With the change to $\tau_m$ and $E_b$, we can rewrite the equations as:
+Here, $\theta$ defines the output angle of the motor. The torque generated by the motor is given by $\tau_m = K_t I_a$, where $K_t$ is the torque constant of the motor. The load torque $\tau_l$ represents any external torque applied to the motor. The friction within the rotor of the motor is modeled with $B_m \frac{\mathrm{d} \theta}{\mathrm{d}t}$, where $B_m$ is a constant friction coefficient. The output inertia of the rotor is given by $J_m$. The back electromotive force (EMF) is given by $E_b = K_b \frac{\mathrm{d} \theta}{\mathrm{d}t}$, where $K_b$ is the back EMF constant of the motor. $E_a$ is the armature voltage, which serves as the control input to the system. $R_a$ and $L_a$ are the armature resistance and inductance, respectively. With the change to $\tau_m$ and $E_b$, we can rewrite the equations as:
 
 \begin{align}%
     \label{eq:motor_model_mechanical_rewrite}
@@ -471,7 +472,7 @@ Further, at no-load speed, we have $\tau_l \equiv 0$, and $\frac{\mathrm{d}^2\th
     \end{tabular}
 \end{table}
 
-Sadly it's not possible to estimate the inertia of the rotor $J_m$, nor the armature inductance $L_a$ from the datasheet. For simulation purposes, the parameters are chosen as $J_m=\SI{0.093}{\kilogram \metre\squared}$ and $L_a=\SI{6}{\milli\henry}$, reported as example brushed DC motor values by \textcite{rahmanMathematicalModelBrushed2021}. Even though the values are currently unkown, they can be estimated through a calibration step later. One way that's possibly the most convenient, is to use a parameter identification method. 
+It's not possible to estimate the inertia of the rotor $J_m$, nor the armature inductance $L_a$ from the datasheet. For simulation purposes, the parameters are chosen as $J_m=\SI{0.093}{\kilogram \metre\squared}$ and $L_a=\SI{6}{\milli\henry}$, reported as example brushed DC motor values by \textcite{rahmanMathematicalModelBrushed2021}. These values can be estimated through a calibration step later. One possible approach is to estimate the parameters using a parameter identification method.
 
 \subsection{Estimating the armature inductance and rotor inertia}%
 \label{subsec:est_armature_inductance}
@@ -506,7 +507,7 @@ Ordering it around, moving all measured signals and known parameters to the left
     \implies z_{\jnt{L_a}} = \theta^*_{\jnt{L_a}} \Phi_{\jnt{L_a}}.
 \end{equation*}
 
-Hence we've transformed the system to a SPM like discussed in \cref{eq:theory_control_static_parametric_model}. We can do the same for the inertia of the rotor $J_m$. We'll start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
+Hence we've transformed the system to a SPM like discussed in \cref{subsec:theory_control_static_parametric_model}. We can do the same for the inertia of the rotor $J_m$. We'll start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
 
 \begin{equation}
     \label{eq:motor_model_mechanical_laplace}
@@ -590,20 +591,20 @@ while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second
 \begin{figure}%
     \label{fig:est_armature_inductance}
     \centering
-    \includegraphics[width=0.8\textwidth]{../Figures/Modelling/inertia_and_inductance_estimator_gradient_results.pdf}
+    \includegraphics[width=0.7\textwidth]{../Figures/Modelling/inertia_and_inductance_estimator_gradient_results.pdf}
     \caption{Parameter identification of the armature inductance $L_a$ and rotor inertia $J_m$ using a step input in the armature voltage $E_a$.}
 \end{figure}
 
 \subsection{Mass-spring-damper load}%
 \label{subsec:mass_spring_model}
 
-In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, in addition to that the configuration of the whiffle tree is unkown, the full finger model isn't observable, and can't be used for position control design. For analysis, we'll assume that finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
+In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, and that the configuration of the whiffle tree is unkown, the full finger model isn't observable, and can't be used for position control design. For analysis, we'll instead assume that the finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
 
 \begin{equation}
     \tau_l = J \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + c \frac{\mathrm{d}\theta}{\mathrm{d}t} + k (\theta - \theta_{eq}),
 \end{equation}
 
-where $J$ is the 'total' inertia of the finger, $c$ is the 'total' damping coefficient of the finger, $k$ is the 'total' stiffness of the finger, and $\theta_{eq}$ is a kind of equilibrium angle of the finger. Substituting this into \cref{eq:motor_model_mechanical_rewrite}, we get the updated mechanical dynamics:
+where $J$ is the 'total' inertia of the finger, $c$ is the 'total' damping coefficient of the finger, $k$ is the 'total' stiffness of the finger, and $\theta_{eq}$ is the 'total' equilibrium angle of the finger. Substituting this into \cref{eq:motor_model_mechanical_rewrite}, we get the updated mechanical dynamics for the brushless DC motor with the simplified finger load:
 
 \begin{equation}
     \label{eq:motor_model_mechanical_load}
@@ -613,7 +614,7 @@ where $J$ is the 'total' inertia of the finger, $c$ is the 'total' damping coeff
 \subsection{State-space model of brushed DC motor with simplified finger load}%
 \label{subsec:state_space_model_load}
 
-To analyze the position controller for the motor with load, discussed further in \cref{sec:mrac_implementation}, we need to express the dynamics in \cref{eq:motor_model_mechanical_load} in state-space representation, as shown in \cref{subsec:theory_control_state_space}. Assuming that $I_a$ can be treated as an input, explained in \cref{sec:controller_design_current_controller}, and defining $\omega\triangleq\frac{\mathrm{d}\theta}{\mathrm{d}t}$, we can rewrite the \cref{eq:motor_model_mechanical_load} and as:
+For the position controller for the motor, discussed further in \cref{sec:mrac_implementation}, we need to express the dynamics in \cref{eq:motor_model_mechanical_load} in state-space representation, as shown in \cref{subsec:theory_control_state_space}. Assuming that $I_a$ can be treated as an input, explained in \cref{sec:controller_design_current_controller}, and defining $\omega\triangleq\frac{\mathrm{d}\theta}{\mathrm{d}t}$, we can rewrite the \cref{eq:motor_model_mechanical_load} and as:
 
 \begin{equation}
     \frac{\mathrm{d}\omega}{\mathrm{d}t} = \frac{1}{J_m + J} \left(K_t I_a - (B_m + c) \omega - k (\theta - \theta_{eq})\right).
