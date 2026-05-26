@@ -6,7 +6,7 @@
 
 For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint has a different support-structure, that makes it free to move laterally when the finger is extended. But this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger should be minimal.
 
-For the model, the phalanges will be modeleled as three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers at each joint. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}.
+For the model, the phalanges will be modeleled as three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers at each joint. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}. It should be noted, that the parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of an unloaded finger to obtain realistic motion. 
 
 \begin{figure}
     \centering
@@ -108,7 +108,7 @@ The rotational kinetic energy of the system is rather straightforward to derive.
 
 The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the center of mass of each link and taking the time derivative. To find the center of mass, we'll use homogenous transformations, as described in \cref{subsec:theory_modelling_homogenous_transformations}. 
 
-Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is alligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is alligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is alligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is alligned with the distal phalanx. A visualization of the frames is shown in \cref{fig:modelling_finger_model_frames}. The homogenous transformations between these frames can be expressed as:
+Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is aligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is aligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is aligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is aligned with the distal phalanx. A visualization of the frames is shown in \cref{fig:modelling_finger_model_frames}. The homogenous transformations between these frames can be expressed as:
 
 \begin{equation}
     \label{eq:modelling_homogenous_transformations}
@@ -311,7 +311,7 @@ where
     &= p_4 \dot{\varphi}_{1-2} s_{\varphi_3}.
 \end{align*}
 
- The generalized forces $\boldsymbol{\tau}$ are the same as in \cref{eq:modelling_total_generalized_forces}. The \textit{gravity vector} $\mathbf{G}(\mathbf{q})$ represents the gravitational forces acting on the system. Since we're omiting the effects of gravity, the gravity vector is zero:
+ The generalized forces $\boldsymbol{\tau}$ are the same as in \cref{eq:modelling_total_generalized_forces}. The \textit{gravity vector} $\mathbf{G}(\mathbf{q})$ represents the gravitational forces acting on the system. Since we're omitting the effects of gravity, the gravity vector is zero:
 
 \begin{equation}
     \label{eq:modelling_gravity_vector}
@@ -497,7 +497,7 @@ Applying the filter to \cref{eq:motor_model_electrical_laplace} gives us:
     \frac{1}{\Lambda_{I_a}(s)} E_a(s) = \frac{1}{\Lambda_{I_a}(s)} (L_a s + R_a) I_a(s) + \frac{1}{\Lambda_{I_a}(s)} K_b s \theta(s).
 \end{equation*}
 
-Ordering it around, moving all measured signals and known parameters to the left, and all factors with the unkown parameter $L_a$ to the right, we get:
+Ordering it around, moving all measured signals and known parameters to the left, and all factors with the unknown parameter $L_a$ to the right, we get:
 
 \begin{equation}
     \label{eq:motor_model_electrical_filtered}
@@ -589,10 +589,10 @@ Using the gradient method developed in \cref{subsec:theory_gradient_method}, wit
 while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second}$, the resulting estimates of $\hat{L}_a(t)$ and $\hat{J}_m(t)$ are shown in \cref{fig:est_armature_inductance}. It is clear that the estimates converge exponentially fast to the true values. Since these are static parameters that only needs to be estimated once, $L_a$ and $J_m$ will be assumed known for further controller design.
 
 \begin{figure}%
-    \label{fig:est_armature_inductance}
     \centering
     \includegraphics[width=0.7\textwidth]{../Figures/Modelling/inertia_and_inductance_estimator_gradient_results.pdf}
     \caption{Parameter identification of the armature inductance $L_a$ and rotor inertia $J_m$ using a step input in the armature voltage $E_a$.}
+    \label{fig:est_armature_inductance}
 \end{figure}
 
 \subsection{Mass-spring-damper load}%
@@ -677,3 +677,122 @@ Written in state-space form, we have:
 %     \implies \mathbf{y} &= \mathbf{C}\mathbf{x}.
 %     \end{aligned}
 % \end{equation}
+
+\subsection{Connecting the motors to the finger through a cable}%
+\label{subsec:connecting_motor_and_finger}
+
+In \cref{sec:mrac_implementation}, we implement a position controller for the brushed DC motor. For evaluation, we will simulate two motors, one for flexion and one for extension, as is the case in our physical system. The motors will be pulling on their own cables, where the force which the motors generate gets distributed to the three phalanges through their own \textit{whiffle tree}. As the exact configuration is still being worked on, we will simply define that $w_1 = \frac{1}{2}$ of the force pulling on the whiffle tree will go to the proximal phalanx, $w_2 = \frac{1}{3}$ of the force going to the middle phalanx, and $w_3 = \frac{1}{6}$ of the force going to the distal phalanx. These values are subject to change in the actual system. The force application is shown in \cref{fig:controller_design_force_application}. 
+
+\subsubsection{Cable tension}
+\label{subsec:cable_tension}
+
+To emulate the cable connecting the motor to the finger, the following constraint is added to the system:
+
+\begin{equation}
+    g(\theta, \mathbf{q}) \triangleq r_{spindle} \theta + L_{finger}(\mathbf{q}) - C = 0, \quad \mathbf{q} = \begin{bmatrix}
+        \varphi_{\jnt{MCP}}\\
+        \varphi_{\jnt{PIP}}\\
+        \varphi_{\jnt{DIP}}
+    \end{bmatrix},
+\end{equation}
+
+where $r_{spindle}$ is the radius of the spindle mounted on the motor, $\theta$ is the angle of the motor, $L_{finger}(\mathbf{q})$ is an estimate for the total length of cable from the finger to the whiffle tree. $C$ is a constant defining the total cable length in the system, which then constrains the angle of the motor and the relative angles of the finger. The estimate of the total cable going from the finger to the whiffle tree is defined as:
+
+\begin{equation}
+    L_{finger}(\mathbf{q}) = \sum_{i = 1}^{3} w_i ||\mathbf{r}_{a, i} - \mathbf{r}_{t, i}||,
+\end{equation}
+
+where $\mathbf{r}_{a, i}$ and $\mathbf{r}_{t, i}$ are the attachment and target points of the $i$-th phalanx, respectively, shown in \cref{fig:controller_design_force_application}. The distance between the attachment and target points of the i'th phalanx is scaled with the force ratio $w_i$ to get a better estimate of the total length of cable with the whiffle tree. Differentiating the constraint, we get the velocity constraint:
+
+\begin{equation}
+    \dot{g}(\omega, \mathbf{q}, \dot{\mathbf{q}}) = r_{spindle} \omega + \frac{\partial L_{finger}}{\partial \mathbf{q}} \dot{\mathbf{q}} = 0,
+\end{equation}
+
+and further once more we get the acceleration constraint:
+
+\begin{equation}
+    \ddot{g}(\dot{\omega}, \mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}}) = r_{spindle} \dot{\omega} + \frac{\partial L_{finger}}{\partial \mathbf{q}} \ddot{\mathbf{q}} + \dot{\mathbf{q}}^\intercal \frac{\partial^2 L_{finger}}{\partial \mathbf{q}^2} \dot{\mathbf{q}} = 0.   
+\end{equation}
+
+To reduce numerical drift, Baumgarte stabilization is added \parencite{baumgarteStabilizationConstraintsIntegrals1972}, to combine all the constraints into a single equation:
+
+\begin{equation}
+    \label{baumgarte}
+    \ddot{g} + 2\alpha \dot{g} + \beta^2 g = 0, \quad \alpha, \beta > 0.
+\end{equation}
+
+The final constraint in \cref{baumgarte} is defined separately for the flexion and extension cables. The corresponding Lagrange multipliers are treated as the cable tensions $T_f$ and $T_e$ for the flexion and extension cable, respectively, and are solved simultaneously at each timestep.
+
+Since the cables only can pull on the finger, we further impose that the cable tensions must be non-negative:
+
+\begin{equation}
+    T_f, T_e \geq 0.
+\end{equation}
+
+To be clear, this implementation of the cable tension is not a perfect emulation of the real system. In reality, the cable is slightly elastic, and the whiffle trees will provide some friction. There will also be more cable in the system. However, considering that the position of the attachment points, target points, and configuration of whiffle trees are not yet decided in the real system. This should provide a good enough approximation to test the position controller, and get a better understanding of the dynamics of the system.
+
+\subsubsection{Updated dynamics with the cable tension}
+
+Given the cable tension $T_x$ prior to the whiffle tree for the $x$-th cable, the $x$-th brushed DC motor experiences a load torque of $\tau_l = r_{spindle} T_x$, giving the updated mechanical dynamics from \cref{eq:motor_model_mechanical_rewrite}:
+
+\begin{equation}
+    \label{eq:motor_dynamics_cable_tension}
+    J_m \frac{\mathrm{d}^2\theta_x}{\mathrm{d}t^2}+B_m \frac{\mathrm{d} \theta_x}{\mathrm{d}t} = K_t I_a - r_{spindle} T_x.
+\end{equation}
+
+Similarly, the finger experiences a generalized load torque. Since the cable
+tension acts along the line from the attachment point $\mathbf{r}_{a,i}$ to the
+target point $\mathbf{r}_{t,i}$, the force applied to the $i$-th phalanx is
+
+\begin{equation}
+    \mathbf{F}_{x, i}
+    =
+    w_i T_x
+    \frac{
+        \mathbf{r}_{x,t,i} - \mathbf{r}_{x,a,i}
+    }{
+        \left\|
+            \mathbf{r}_{x,t,i} - \mathbf{r}_{x,a,i}
+        \right\|
+    }.
+\end{equation}
+
+The generalized torque contribution from this force is computed with:
+
+\begin{equation}
+    \boldsymbol{\tau}_{x, i}
+    =
+    \frac{\partial (\mathbf{r}_{x,a,i} - \mathbf{r}_{x,t,i})}{\partial \mathbf{q}}^\intercal
+    \mathbf{F}_{x, i},
+\end{equation}
+
+which leads to the total generalized cable torque on the finger:
+
+\begin{equation}
+    \boldsymbol{\tau}_{x, cable}
+    =
+    \sum_{i=1}^{3}
+    \boldsymbol{\tau}_{x, i}.
+\end{equation}
+
+Given that we have two motors pulling on the finger with their own cables, we can calculate the total generalized torque from both the flexion and extension cables on the finger as:
+
+\begin{equation}
+    \boldsymbol{\tau}_{cable} = \sum_{i=1}^{3} \frac{\partial (\mathbf{r}_{f, a,i} - \mathbf{r}_{f, t,i})}{\partial \mathbf{q}}^\intercal
+    \mathbf{F}_{f, i} + \sum_{i=1}^{3} \frac{\partial (\mathbf{r}_{e, a,i} - \mathbf{r}_{e, t,i})}{\partial \mathbf{q}}^\intercal
+    \mathbf{F}_{e, i}.
+\end{equation}
+
+This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_motion}:
+
+\begin{equation}
+    \label{eq:finger_dynamics_cable_tension}
+    \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} + \left(\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})+\mathbf{B}\right)\dot{\mathbf{q}} + \mathbf{K} \left(\mathbf{q} - \mathbf{q}_{\text{eq}}\right) = \boldsymbol{\tau}_{\text{ext}} + \boldsymbol{\tau}_{\text{cable}}.
+\end{equation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{../Figures/Controller_design/force_diagram.pdf}
+    \caption{Force application on the finger. The flexion motor applies a force $F_f$ on the flexion cable, which gets distributed to the three phalanges through the whiffle tree. Similarly, the extension motor applies a force $F_e$ on the extension cable, which also gets distributed to the three phalanges through its own whiffle tree.}
+    \label{fig:controller_design_force_application}
+\end{figure}

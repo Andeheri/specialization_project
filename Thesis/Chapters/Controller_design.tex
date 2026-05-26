@@ -102,7 +102,7 @@ Clearly, \cref{eq:controller_design_current_dynamics_z_transform} has a pole at 
     \end{aligned}
 \end{equation}
 
-One downside to using a P controller is that there will be a steady-state error. To eliminate this, we can artifically give the controller a higher reference current. To do this we will need to know the steady-state value of the current for a given reference. Assuming we apply a step reference of $r[k] = r_0$ for all $k \geq 0$. Provided we choose a $K_p$ that satisfies \cref{eq:controller_design_current_stability_condition}, the closed-loop system will converge, and as we let $t \to \infty \implies k \to \infty$, \cref{eq:controller_design_discretized_reference} becomes:
+One downside to using a P controller is that there will be a steady-state error. To eliminate this, we can artificially give the controller a higher reference current. To do this we will need to know the steady-state value of the current for a given reference. Assuming we apply a step reference of $r[k] = r_0$ for all $k \geq 0$. Provided we choose a $K_p$ that satisfies \cref{eq:controller_design_current_stability_condition}, the closed-loop system will converge, and as we let $t \to \infty \implies k \to \infty$, \cref{eq:controller_design_discretized_reference} becomes:
 
 \begin{equation}
     \label{eq:controller_design_current_steady_state}
@@ -121,7 +121,7 @@ Hence to eliminate the steady-state error, we can choose the reference to be:
 \subsection{Simulation of current controller}
 \label{subsec:current_simulation}
 
-To evaluate the controller, we will simulate it with the motor model in \cref{eq:motor_model_electrical_rewrite} and \cref{eq:motor_model_mechanical_rewrite} with $\tau_l \equiv 0$. Using $K_p=\frac{1}{2}K_{p,\text{max}}(T_s)$, where the reference current is a step input of $1$ A, and scaled with regards to \cref{eq:controller_design_current_reference_tuning}. Additionally there is a saturation put on $E_a=\pm\SI{12}{\volt}$. \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_speed} and \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed} shows a simulation of the P+FF controller and as just the P controller, with $T_s = \SI{0.2}{\milli\second}$, where the motor is initially spinning at $\omega_0 = \SI{5}{\radian\per\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$, respectively. \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms} shows the simulation of the P+FF controller with and without noise to the measurement of $I_a$, with $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$, respectively. The noise is a zero-mean Gaussian noise with a standard deviation of $\sigma_{\jnt{I_a}} = \SI{50}{\milli\ampere}$, which is higher than is expected for the system, but it will help us evaluate the robustness of the controller. \cref{fig:controller_design_current_controller_simulation_small_Jm} shows the simulation of the P+FF controller with a smaller motor inertia $J_m=\SI{0.5}{\gram\metre\squared}$ considering it is still unknown, for the different sampling periods $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$. 
+To evaluate the controller, we will simulate it with the motor model in \cref{eq:motor_model_electrical_rewrite} and \cref{eq:motor_model_mechanical_rewrite} with $\tau_l \equiv 0$. Using $K_p=\frac{1}{2}K_{p,\text{max}}(T_s)$, where the reference current is a step input of $1$ A, and scaled with regards to \cref{eq:controller_design_current_reference_tuning}. Additionally there is a saturation put on $E_a=\pm\SI{12}{\volt}$. \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_speed} and \cref{fig:controller_design_current_controller_simulation_P_vs_PFF_no_speed} shows a simulation of the P+FF controller and as just the P controller, with $T_s = \SI{0.2}{\milli\second}$, where the motor is initially spinning at $\omega_0 = \SI{5}{\radian\per\second}$ and $\omega_0 = \SI{0}{\radian\per\second}$, respectively. \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms} shows the simulation of the P+FF controller with and without noise added to the measurement of $I_a$, with $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$, respectively. The noise is a zero-mean Gaussian noise with a standard deviation of $\sigma_{\jnt{I_a}} = \SI{50}{\milli\ampere}$, which is higher than is expected for the system, but it will help us evaluate the robustness of the controller. \cref{fig:controller_design_current_controller_simulation_small_Jm} shows the simulation of the P+FF controller with a smaller motor inertia $J_m=\SI{0.5}{\gram\metre\squared}$ considering it is still unknown, for the different sampling periods $T_s = \SI{0.2}{\milli\second}$ and $T_s = \SI{1.0}{\milli\second}$. 
 
 \begin{figure}[htbp]
     \centering
@@ -180,7 +180,7 @@ To evaluate the controller, we will simulate it with the motor model in \cref{eq
 
 \subsection{Evaluation of controller}
 
-When the motor is starting from rest, both the P+FF and P controllers are able to reach the target current fast. However, as the motor picks up speed, the back-EMF becomes significant, and the P controller is no longer able to fully compensate for the induced voltage, and the armature current starts to deviate from the reference current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_no_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_no_speed}. Note that the observed effect of the increasing back-EMF could be more or less significant in the actual system, since the motor inertia $J_m$ is only based on similar motors, and not from the actual motor. If the true inertia is smaller, the observed effect would happen faster. When the motor is already spinning at a high speeds, the differences between the two controllers becomes even more significant. At no point does the P controller reach its target current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_with_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_with_speed}.
+When the motor is starting from rest, both the P+FF and P controllers are able to reach the target current fast. However, as the motor picks up speed, the back-EMF becomes significant, and the P controller is no longer able to fully compensate for the induced voltage, and the armature current starts to deviate from the reference current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_no_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_no_speed}. Note that the observed effect of the increasing back-EMF could be more or less significant in the actual system, since the motor inertia $J_m$ is only based on similar motors, and not from the actual motor. If the true inertia is smaller, the observed effect would happen faster. When the motor is already spinning at high speeds, the differences between the two controllers becomes even more significant. At no point does the P controller reach its target current, as can be seen in \cref{fig:controller_design_current_controller_simulation_p_with_speed}. The P+FF controller on the other hand continues to perform well, as it can account for the back-EMF, as shown in \cref{fig:controller_design_current_controller_simulation_pff_with_speed}.
 
 Adding noise to the current measurements didn't really affect the stability of the controller, as can be seen in \cref{fig:controller_design_current_controller_simulation_noise_0.2ms} and \cref{fig:controller_design_current_controller_simulation_noise_1ms}. The current only oscillates slightly around the reference when there's noise present, compared to without. When considering the motor inertia to be smaller, shown in \cref{fig:controller_design_current_controller_simulation_small_Jm}, a longer update period of $T_s = \SI{1.0}{\milli\second}$ results in the current getting a slight steady-state-error, which is not present with the shorter update period of $T_s = \SI{0.2}{\milli\second}$. This is likely due to the assumption of constant velocity between samples being less accurate for longer sampling times. This reduces the effect of the feedforward term, which in turn causes a steady-state error. With a shorter update period, the assumption of a constant speed is more valid, which allows the feedforward term to be more accurate, which in turn enables the controller to track the reference current better. 
 
@@ -226,7 +226,7 @@ If it's more convenient to control the force applied to the object instead of th
     \label{fig:controller_design_torque_control_rigid_object}
 \end{figure}
 
-Ideally, if there was no friction between the motor and the finger, $\tau_l = \tau_{finger}$. In reality, because of the bowden tube the cable is running through, and other inconsistencies in the setup, there will be some friction. Therefore, we can expect $\tau_l = \tau_{finger} + \tau_{friction}$, where $\tau_{friction}$ is the torque lost to friction. Hence, without any direct measurement of the applied force to the finger, we would expect that the applied force to the finger will be less than the reference force. To combat this, the inclusion of integrated fingertip force sensors could be prove useful.
+Ideally, if there was no friction between the motor and the finger, $\tau_l = \tau_{finger}$. In reality, because of the bowden tube the cable is running through, and other inconsistencies in the setup, there will be some friction. Therefore, we can expect $\tau_l = \tau_{finger} + \tau_{friction}$, where $\tau_{friction}$ is the torque lost to friction. Hence, without any direct measurement of the applied force to the finger, we would expect that the applied force to the finger will be less than the reference force. To combat this, the inclusion of integrated fingertip force sensors could prove useful.
 
 \subsection{Force control with integrated fingertip force sensors}
 \label{subsec:fingertip_sensors}
@@ -244,9 +244,9 @@ As mentioned, the cables in the system are running through bowden tubes, which i
     F_{\jnt{finger}} = F_m \left(1 - \exp(-\mu \Phi)\right),
 \end{equation}
 
-where $\mu$ is the friction coefficient, and $\Phi$ is the total wrap angle of the cable in the bowden tube. In theory one could include this with a feedforward term, but for the time being, I'll assume it to be unkown. For simulation purposes,  I'll assume that $\exp(-\mu \Phi)\equiv 0.1$. This means that only $90\%$ of the motor force is applied to the finger. \cref{fig:controller_with_vs_without_friction_force_control} shows the simulation of the force control with and without the integrated fingertip force sensors, with $T_s = \SI{0.2}{\milli\second}$ and $r_{\jnt{F}}=\SI{100}{\newton}$. Here the controller parameters were chosen simply through repeated simulation, where $K_p = 0.001$ and $K_i = 8$. These will most likely have to be retuned in the actual system. As can be seen in \cref{fig:force_control_friction_without}, without the integrated fingertip force sensors, the applied force to the finger never reaches its target, as is expected due to the friction. With the integrated fingertip force sensors, as shown in \cref{fig:force_control_friction_with}, the applied force to the finger quickly converges to the reference force, despite the friction.
+where $\mu$ is the friction coefficient, and $\Phi$ is the total wrap angle of the cable in the bowden tube. In theory one could include this with a feedforward term, but for the time being, I'll assume it to be unknown. For simulation purposes,  I'll assume that $\exp(-\mu \Phi)\equiv 0.1$. This means that only $90\%$ of the motor force is applied to the finger. \cref{fig:controller_with_vs_without_friction_force_control} shows the simulation of the force control with and without the integrated fingertip force sensors, with $T_s = \SI{0.2}{\milli\second}$ and $r_{\jnt{F}}=\SI{100}{\newton}$. Here the controller parameters were chosen simply through repeated simulation, where $K_p = 0.001$ and $K_i = 8$. These will most likely have to be retuned in the actual system. As can be seen in \cref{fig:force_control_friction_without}, without the integrated fingertip force sensors, the applied force to the finger never reaches its target, as is expected due to the friction. With the integrated fingertip force sensors, as shown in \cref{fig:force_control_friction_with}, the applied force to the finger quickly converges to the reference force, despite the friction.
 
-In the simulation, the the resultant force after the friction was assumed directly applied to the fingertip. In the real system however, a whiffle tree will be used. It might therefore be useful to scale the base reference current to account for the total force the motor will have to pull on the whiffle tree. In \cref{subsec:connecting_motor_and_finger}, the force ratio for the distal phalanx was defined as $w_3$. Therefore the reference current could instead be defined as:
+In the simulation, the resultant force after the friction was assumed directly applied to the fingertip. In the real system however, a whiffle tree will be used. It might therefore be useful to scale the base reference current to account for the total force the motor will have to pull on the whiffle tree. In \cref{subsec:connecting_motor_and_finger}, the force ratio for the distal phalanx was defined as $w_3$. Therefore the reference current could instead be defined as:
 
 \begin{equation}
     \label{eq:controller_design_torque_control_reference_with_force_feedback_scaled_feedforward}
@@ -269,13 +269,13 @@ In the simulation, the the resultant force after the friction was assumed direct
 \section{Model reference adaptive control (MRAC) for position control}%
 \label{sec:mrac_implementation}
 
-When the hand is not in contact with any objects, we want to control the position of the hand. However, due to the big differences in mass, stiffness and dampening in the hand between patients, it becomes difficult to design a controller with static gains that works well for all patients. To address this issue, we will implement a model reference adaptive control (MRAC) scheme, which will allow us to adapt the controller parameters online based on the observed behavior of the system. To be clear, the purpose is mostly just to speed up the tuning process of the controller, and get good enough position control when frequently switching between patients. I would however recommend to use a simpler control approach if the system is to be used several times by the same patient. 
+When the hand is not in contact with any objects, we want to control the position of the hand. However, due to the big differences in mass, stiffness and dampening in the hand between patients, it becomes difficult to design a controller with static gains that works well for all patients. To address this issue, we will implement a model reference adaptive control (MRAC) scheme, which will allow us to adapt the controller parameters online based on the observed behavior of the system. To be clear, the purpose is mostly just to speed up the tuning process of the controller, and get good enough position control when frequently switching between patients. I would, however, recommend to use a simpler control approach if the system is to be used several times by the same patient. 
 
 As discussed in \cref{subsec:mass_spring_model}, because of modelling uncertainties and the fact that we as of yet don't measure anything at the hand, the finger model from \cref{sec:finger_model} becomes unobservable. Therefore controlling the angles of the fingers directly becomes infeasible. Instead we will focus on controlling the position of the motor precisely and use it as a proxy for controlling the finger angles, as it's connected directly to the finger through a cable. For this we will use the MRAC scheme introduced in \cref{subsec:theory_control_mrac}. It calls for the system to be controllable. Using the simplified model of the finger dynamics as a torsional mass-spring-damper system acting on the motor, from \cref{subsec:state_space_model_load}, we can check if the simplified system is controllable. This doesn't guarantee controllability of the actual system, but it will at least work as an indication of controllability.
 
 \subsection{Controllability of the system}%
 \label{subsec:controllability}
-Based on the state-space representation our system in \cref{subsec:state_space_model_load}, we can check if the system is controllable, as described in \cref{subsec:theory_control_controllability}. The controllability matrix $\mathcal{C}$ for our system is given by:
+Based on the state-space representation of our system in \cref{subsec:state_space_model_load}, we can check if the system is controllable, as described in \cref{subsec:theory_control_controllability}. The controllability matrix $\mathcal{C}$ for our system is given by:
 
 \begin{equation}
     \label{eq:model_controllability}
@@ -297,7 +297,7 @@ Clearly, $\mathrm{rank}(\mathcal{C}) = 2$, which is equal to the number of state
 \subsection{MRAC implementation}%
 \label{subsec:controller_design_mrac_implementation}
 
-The MRAC scheme that will be implemented is based on \cref{subsec:theory_control_mrac}. In our physical model of the system, we will use the finger model developed in \cref{sec:finger_model}, connected to the brushed DC motor as a load, through a cable connected to a whiffle tree to spread the force to all three phalanges. From the motor side, the dynamics can be described through the state-space representation:
+The MRAC scheme that will be implemented is based on \cref{subsec:theory_control_mrac}. As we're controlling the position of the motor, we will start by looking at the dynamics of the brushed DC motor in \cref{eq:motor_model_mechanical_rewrite}, assuming the armature current can be treated as a control input. The state-space representation is given by:
 
 \begin{equation}
     \label{eq:controller_design_mrac_system_dynamics}
@@ -317,7 +317,7 @@ The MRAC scheme that will be implemented is based on \cref{subsec:theory_control
         \end{bmatrix}}_{\mathbf{x}} + \underbrace{\begin{bmatrix}
             0 \\
             \frac{K_t}{J_m}
-        \end{bmatrix}}_{\mathbf{B}} \underbrace{I_a}_{u} + \underbrace{\begin{bmatrix}
+        \end{bmatrix}}_{\mathbf{B}} \underbrace{I_a}_{u} - \underbrace{\begin{bmatrix}
             0 \\
             \frac{\tau_l}{J_m}
         \end{bmatrix}}_{\mathbf{d}},
@@ -330,7 +330,7 @@ The MRAC scheme that will be implemented is based on \cref{subsec:theory_control
     \end{aligned}
 \end{equation}
 
-where $\theta$ is the angle of the motor, $\omega$ is the angular velocity of the motor, $I_a$ is the armature current, and $\tau_l$ is the load torque applied to the motor by the finger. The output $y(t)$ is the angle of the motor, which we want to control. The MRAC scheme calls for a reference model, which the system should follow as closely as possible. Since our system is a second-order system, we will use a second-order reference model, in the standard form:
+where $\theta$ is the angle of the motor, $\omega$ is the angular velocity of the motor, $I_a$ is the armature current, and $\tau_l$ is the load torque applied to the motor by a cable, connected to a whiffle tree, further connected to the finger. The output $y(t)$ is the angle of the motor, which we want to control. The MRAC scheme calls for a reference model, which the system should follow as closely as possible. Since our system is a second-order system, we will use a second-order reference model, in the standard form:
 
 \begin{equation}
     \label{eq:controller_design_mrac_reference_model}
@@ -364,10 +364,10 @@ Therefore, as long as $\zeta, \omega_n > 0$, the reference model will be stable.
     r_{\jnt{I_a}}(t) = -\mathbf{K}^\intercal(t) \mathbf{x}(t) + L(t) r_{\theta}(t),
 \end{equation}
 
-where $\mathbf{K}(t) \in \mathbb{R}^2$ and $L(t) \in \mathbb{R}$ are the adaptive parameters that will be updated online based on the observed behavior of the system. Defining the tracking error $\mathbf{e}(t)$ as:
+where $\mathbf{K}(t) \in \mathbb{R}^2$ and $L(t) \in \mathbb{R}$ are the adaptive parameters that will be updated online based on the observed behavior of the system. Defining the tracking error $\boldsymbol{\epsilon}(t)$ as:
 
 \begin{equation}
-    \mathbf{e}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
+    \boldsymbol{\epsilon}(t) = \mathbf{x}(t) - \mathbf{x}_m(t).
 \end{equation}
 
 Solving for $\mathbf{P}$ for a $\mathbf{Q} =\mathbf{Q}^\intercal > 0$ in the Lyapunov equation:
@@ -380,130 +380,18 @@ we can define the adaptive law as:
 
 \begin{equation}
     \begin{aligned}
-        \dot{\mathbf{K}}(t) &= \boldsymbol{\Gamma}_K \mathbf{x} \mathbf{B}_m^\intercal \mathbf{P} \mathbf{e}, \\
-        \dot{L}(t) &= - \gamma_L \mathbf{B}_m^\intercal \mathbf{P} \mathbf{e} r_{\theta}(t),
+        \dot{\mathbf{K}}(t) &= \boldsymbol{\Gamma}_K \mathbf{x} \mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon}, \\
+        \dot{L}(t) &= - \gamma_L \mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon} r_{\theta}(t),
     \end{aligned}
 \end{equation}
 
 where $\boldsymbol{\Gamma}_K \in \mathbb{R}^{2 \times 2}$ and $\gamma_L \in \mathbb{R}$ are positive definite matrices that determine the adaptation rate of the parameters. 
 
-\subsection{Connecting the motors to the finger through a cable}%
-\label{subsec:connecting_motor_and_finger}
-
-For the simulation of the position controller, we will simulate two motors, one for flexion and one for extension, as is the case in our physical system. The motors will be pulling on each their cables, where force the motors generate gets distributed to the three phalanges through their own whiffle tree, with $w_1 = \frac{1}{2}$ of the force going to the proximal phalanx, $w_2 = \frac{1}{3}$ of the force going to the middle phalanx, and $w_3 = \frac{1}{6}$ of the force going to the distal phalanx. The force application is shown in \cref{fig:controller_design_force_application}. 
-
-\subsubsection{Cable tension}
-\label{subsec:cable_tension}
-
-To emulate the cable connecting the motor to the finger, the following constraint is added to the system:
-
-\begin{equation}
-    g(\theta, \mathbf{q}) \triangleq r_{spindle} \theta + L_{finger}(\mathbf{q}) - C = 0, \quad \mathbf{q} = \begin{bmatrix}
-        \varphi_{\jnt{MCP}}\\
-        \varphi_{\jnt{PIP}}\\
-        \varphi_{\jnt{DIP}}
-    \end{bmatrix},
-\end{equation}
-
-where $r_{spindle}$ is the radius of the spindle mounted on the motor, $\theta$ is the angle of the motor, $L_{finger}(\mathbf{q})$ is an estimate for the total length of cable from the finger to the whiffle tree. $C$ is a constant defining the total cable length in the system, which then constraints the angle of the motor and the relative angles of the finger. The estimate of the total cable going from the finger to the whiffle tree is defined as:
-
-\begin{equation}
-    L_{finger}(\mathbf{q}) = \sum_{i = 1}^{3} w_i ||\mathbf{r}_{a, i} - \mathbf{r}_{t, i}||,
-\end{equation}
-
-where $\mathbf{r}_{a, i}$ and $\mathbf{r}_{t, i}$ are the attachment and target points of the $i$-th phalanx, respectively, shown in \cref{fig:controller_design_force_application}. The distance between the attachment and target points of each phalanx is scaled with the force ratios $w_i$ to get a better estimate of the total length of cable with the whiffle tree. Differentiating the constraint, we get the velocity constraint:
-
-\begin{equation}
-    \dot{g}(\omega, \mathbf{q}, \dot{\mathbf{q}}) = r_{spindle} \omega + \frac{\partial L_{finger}}{\partial \mathbf{q}} \dot{\mathbf{q}} = 0,
-\end{equation}
-
-and further once more we get the acceleration constraint:
-
-\begin{equation}
-    \ddot{g}(\dot{\omega}, \mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}}) = r_{spindle} \dot{\omega} + \frac{\partial L_{finger}}{\partial \mathbf{q}} \ddot{\mathbf{q}} + \dot{\mathbf{q}}^\intercal \frac{\partial^2 L_{finger}}{\partial \mathbf{q}^2} \dot{\mathbf{q}} = 0.   
-\end{equation}
-
-To reduce numerical drift, Baumgarte stabilization is added, to combine all the constraints into a single equation:
-
-\begin{equation}
-    \label{baumgarte}
-    \ddot{g} + 2\alpha \dot{g} + \beta^2 g = 0, \quad \alpha, \beta > 0.
-\end{equation}
-
-The final constraint in \cref{baumgarte} is defined separately for the flexion and extension cables. The corresponding Lagrange multipliers are treated as the cable tensions $T_f$ and $T_e$ for the flexion and extension cable, respectively, and are solved simultaneously at each timestep.
-
-Since the cables only can pull on the finger, we further impose that the cable tensions must be non-negative:
-
-\begin{equation}
-    T_f, T_e \geq 0.
-\end{equation}
-
-To be clear, this implementation of the cable tension is not a perfect emulation of the real system. In reality, the cable is slightly elastic, and the whiffle trees will provide some friction. There will also be more cable in the system. However, considering that the position of the attachement points, target points, and configuration of whiffle trees are not yet decided in the real system, this should provide a good enough approximation to test the position controller, and get a better understanding of the dynamics of the system.
-
-\subsubsection{Updated dynamics with the cable tension}
-
-Given the cable tension $T_x$ prior to the whiffle tree for the $x$-th cable, the $x$-th brushed DC motor experiences a load torque of $\tau_l = r_{spindle} T_x$, giving the updated mechanical dynamics from \cref{eq:motor_model_mechanical_rewrite}:
-
-\begin{equation}
-    \label{eq:motor_dynamics_cable_tension}
-    J_m \frac{\mathrm{d}^2\theta_x}{\mathrm{d}t^2}+B_m \frac{\mathrm{d} \theta_x}{\mathrm{d}t} = K_t I_a - r_{spindle} T_x.
-\end{equation}
-
-Similarly, the finger experiences a generalized load torque. Since the cable
-tension acts along the line from the attachment point $\mathbf{r}_{a,i}$ to the
-target point $\mathbf{r}_{t,i}$, the force applied to the $i$-th phalanx is
-
-\begin{equation}
-    \mathbf{F}_{x, i}
-    =
-    w_i T_x
-    \frac{
-        \mathbf{r}_{x,t,i} - \mathbf{r}_{x,a,i}
-    }{
-        \left\|
-            \mathbf{r}_{x,t,i} - \mathbf{r}_{x,a,i}
-        \right\|
-    }.
-\end{equation}
-
-The generalized torque contribution from this force is computed with:
-
-\begin{equation}
-    \boldsymbol{\tau}_{x, i}
-    =
-    \frac{\partial (\mathbf{r}_{x,a,i} - \mathbf{r}_{x,t,i})}{\partial \mathbf{q}}^\intercal
-    \mathbf{F}_{x, i},
-\end{equation}
-
-which leads to the total generalized cable torque on the finger:
-
-\begin{equation}
-    \boldsymbol{\tau}_{x, cable}
-    =
-    \sum_{i=1}^{3}
-    \boldsymbol{\tau}_{x, i}.
-\end{equation}
-
-Given that we have two motors pulling on the finger with their own cables, we can calculate the total generalized torque from both the flexion and extension cables on the finger as:
-
-\begin{equation}
-    \boldsymbol{\tau}_{cable} = \sum_{i=1}^{3} \frac{\partial (\mathbf{r}_{f, a,i} - \mathbf{r}_{f, t,i})}{\partial \mathbf{q}}^\intercal
-    \mathbf{F}_{f, i} + \sum_{i=1}^{3} \frac{\partial (\mathbf{r}_{e, a,i} - \mathbf{r}_{e, t,i})}{\partial \mathbf{q}}^\intercal
-    \mathbf{F}_{e, i}.
-\end{equation}
-
-This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_motion}:
-
-\begin{equation}
-    \label{eq:finger_dynamics_cable_tension}
-    \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} + \left(\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})+\mathbf{B}\right)\dot{\mathbf{q}} + \mathbf{K} \left(\mathbf{q} - \mathbf{q}_{\text{eq}}\right) = \boldsymbol{\tau}_{\text{ext}} + \boldsymbol{\tau}_{\text{cable}}.
-\end{equation}
-
 \subsection{Simulation of MRAC scheme with updated dynamics}
 
-\cref{eq:finger_dynamics_cable_tension} is used for simulating the dynamics of the finger, while two sets of \cref{eq:motor_dynamics_cable_tension} are used for simulating the dynamics of the two motors. To connect the models, a cable constraint is added to emulate the cables connecting the motors and the finger, as discussed in \cref{subsec:cable_tension}. The parameters for the motor and finger model are given in \cref{tab:finger_parameters}. The estimation of the motor parameters are done in \cref{subsec:est_motor_params}. The parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of the unloaded finger to obtain realistic motion. 
+\cref{eq:finger_dynamics_cable_tension} is used for simulating the dynamics of the finger, while two sets of \cref{eq:motor_dynamics_cable_tension} are used for simulating the dynamics of the two motors. To connect the models, a cable constraint is added to emulate the cables connecting the motors and the finger, as discussed in \cref{subsec:cable_tension}. The parameters for the motor and finger model are given in \cref{subsec:est_motor_params} and \cref{tab:finger_params}, respectively. 
 
-Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. The flexion motor is initialized to $\theta_f(0) = \SI{0}{\radian}$, while the extension motor is initialized to $\theta_e(0) = \frac{\pi}{2}\si{\radian}$. To make sure the motors aren't working against each other, they receive an opposite reference angle. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be rotating in the opposite direction, decreasing the tension in its cable. When the motors are decreasing the tension in their cables, the motor would experience $\tau_l \approx \SI{0}{\newton\metre}$. Therefore the dynamics would change, throwing off the adaptive gains. To account for this, we switch to a pretuned (PT) controller, tuned for a unloaded motor. At the same time we turn off the adaptive law. Once the motor recieves a reference that will increase the tension in the cable, we switch back to the adaptive controller, and turn on the adaptive law. The pretuned controller is tuned through the exact same adaptive controller, just with an unloaded motor for $\SI{100}{\second}$. When the pretuned controller is active, these final values of $\mathbf{K}$ and $L$ are used instead of the adaptive gains. The reference angles for the flexion motor and the extension motor is given by:
+Both cables are initialized to be under tension when the finger is in a straight position, i.e. when $\varphi_{\jnt{MCP}} = \varphi_{\jnt{PIP}} = \varphi_{\jnt{DIP}} = 0$. The flexion motor is initialized to $\theta_f(0) = \SI{0}{\radian}$, while the extension motor is initialized to $\theta_e(0) = \frac{\pi}{2}\si{\radian}$. To make sure the motors aren't working against each other, they receive an opposite reference angle. This ensures that as one motor pulls on the finger, increasing the tension in its cable, the other motor will be rotating in the opposite direction, decreasing the tension in its cable. When the motors are decreasing the tension in their cables, the motor would experience $\tau_l \approx \SI{0}{\newton\metre}$. Therefore the dynamics would change, throwing off the adaptive gains. To account for this, we switch to a pretuned (PT) controller, tuned for an unloaded motor. At the same time we turn off the adaptive law. Once the motor receives a reference that will increase the tension in the cable, we switch back to the adaptive controller, and turn on the adaptive law. The pretuned controller is tuned through the exact same adaptive controller, just with $\tau_l\equiv0$ for $\SI{100}{\second}$. When the pretuned controller is active, these final values of $\mathbf{K}$ and $L$ are used instead of the adaptive gains. The reference angles for the flexion motor and the extension motor is given by:
 
 \begin{equation}
     \begin{aligned}
@@ -515,57 +403,23 @@ Both cables are initialized to be under tension when the finger is in a straight
     \end{aligned}
 \end{equation}
 
-The reference models parameters from \cref{eq:controller_design_mrac_reference_model} are set to $\omega_n = 8$ and $\zeta = 1$. $\mathbf{Q} = \begin{bmatrix}
+The reference models parameters from \cref{eq:controller_design_mrac_reference_model} are set to $\omega_n = 5$ and $\zeta = 1$. $\mathbf{Q} = \begin{bmatrix}
     10 & 0 \\
     0 & 1
 \end{bmatrix} \implies \mathbf{P} \approx \begin{bmatrix}
-    3.56 & 0.078 \\
-    0.078 & 0.036
+    3.75 & 0.20 \\
+    0.20 & 0.070
 \end{bmatrix}$. The adaptive gain matrices are set to $\boldsymbol{\Gamma}_K = \begin{bmatrix}
     3 & 0 \\
     0 & 0.5
-\end{bmatrix}$ and $\gamma_L = 2$. The adaptive gains are initalized to $\mathbf{K}(0) = \begin{bmatrix}
+\end{bmatrix}$ and $\gamma_L = 2$. The adaptive gains are initialized to $\mathbf{K}(0) = \begin{bmatrix}
     0.0 \\
     0.0
 \end{bmatrix}$ and $L(0) = 1$.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{../Figures/Controller_design/force_diagram.pdf}
-    \caption{Force application on the finger. The flexion motor applies a force $F_f$ on the flexion cable, which gets distributed to the three phalanges through the whiffle tree. Similarly, the extension motor applies a force $F_e$ on the extension cable, which also gets distributed to the three phalanges through its own whiffle tree.}
-    \label{fig:controller_design_force_application}
-\end{figure}
-
-\begin{table}[ht]
-    \centering
-    \caption{Physical parameters used for the finger model.}
-    \label{tab:finger_parameters}
-    \begin{tabular}{lccc}
-        \toprule
-        \multicolumn{4}{l}{\textbf{Phalanx parameters}} \\
-        \midrule
-        Phalanx & $m$ [\si{\kilogram}] & $l$ [\si{\centi\meter}] & $r$ [\si{\milli\meter}] \\
-        \midrule
-        Proximal Phalanx & 0.020 & 4.8 & 8.5 \\
-        Middle Phalanx & 0.015 & 3.0 & 8.5 \\
-        Distal Phalanx & 0.020 & 2.4 & 8.5 \\
-        \midrule
-        \multicolumn{4}{l}{\textbf{Joint parameters}} \\
-        \midrule
-        Joint & $k$ [\si{\newton\meter\per\radian}] 
-              & $b$ [\si{\newton\meter\second\per\radian}] 
-              & $\varphi_{\mathrm{eq}}$ [\si{\radian}] \\
-        \midrule
-        MCP Joint & 0.5 & 0.05 & $\pi/6$ \\
-        PIP Joint & 0.5 & 0.05 & $\pi/4$ \\
-        DIP Joint & 0.5 & 0.05 & $\pi/12$ \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
 \subsection{Evaluation of MRAC scheme}
 \label{subsec:mrac_evaluation}
-\cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate around the reference model. Over time, however, the adaptive gains $\mathbf{K}$ and $L$ change to values that allow the system to track the reference model more closely, and the oscillations become less prominent. While the pretuned controller is active, indicated in grey, the motor tracks the reference model quite closely. Interestingly it seems to have a slightly faster response than the reference model. This might be due some inconsistensies with the cable tensioning implementation.
+\cref{fig:mrac_simulation_results_10_seconds} shows a simulation of the MRAC controller over $\SI{10}{\second}$. While the MRAC scheme is active, indicated in orange, the motor angles $\theta_f$ and $\theta_e$ initially oscillate about the reference model. Over time, however, the adaptive gains $\mathbf{K}$ and $L$ change to values that allow the system to track the reference model more closely, and the oscillations become less prominent. While the pretuned controller is active, indicated in grey, the motor tracks the reference model quite closely. Interestingly it seems to have a slightly faster response than the reference model. This might be due some inconsistensies with the cable tensioning implementation. Note also that the relative finger angles are moving with the motor angles, indicating that the coupling between the motors and the finger is working as intended.
 
 \begin{figure}
     \centering
@@ -581,14 +435,14 @@ The reference models parameters from \cref{eq:controller_design_mrac_reference_m
     \label{fig:mrac_simulation_results_90_seconds}
 \end{figure}
 
-Continuing the simulation to $\SI{100}{\second}$, \cref{fig:mrac_gains_100_seconds} shows the evolution of the adaptive gains, aswell as the error between the motor angles and their respective reference model angles. \cref{fig:mrac_simulation_results_90_seconds} shows the simulation results for $\SI{10}{\second}$ after $\SI{90}{\second}$. Looking at \cref{fig:mrac_gains_100_seconds}, after $\sim \SI{10}{\second}$, $K_2$ seem to converge to a certain value, while $K_1$ and $L$ eventually keeps growing together, almost logarithmically. The continued growth of $K_1$ and $L$ might be due to the fact that the system is trying to find gains that can track the reference model better, but is limited by the maximum current that the motor can provide. Looking at the current commands going to the motors in \cref{fig:mrac_simulation_results_90_seconds}, it can be observed that they are clipped by the maximum stall current of $\SI{4.9}{\ampere}$. Looking back at \cref{fig:mrac_gains_100_seconds}, it's clear that the error between the motor angles and their respective reference model decrease over time as the adaptive gains update. However they don't go to zero, but end up with some steady-state error, though quite small. This tells us that the adaptive controller gains at some point reach a local optimum. Therefore, to combat the ever increasing gains, we may want to switch to a fixed-gain controller once the gains have converged. 
+Continuing the simulation to $\SI{100}{\second}$, \cref{fig:mrac_gains_100_seconds} shows the evolution of the adaptive gains, aswell as the error between the motor angles and their respective reference model angles. \cref{fig:mrac_simulation_results_90_seconds} shows the simulation results for $\SI{10}{\second}$ after $\SI{90}{\second}$. Looking at \cref{fig:mrac_gains_100_seconds}, $K_2$ seem to converge to a certain value after $\sim \SI{10}{\second}$, while $K_1$ and $L$ eventually keeps growing together, almost logarithmically. The continued growth of $K_1$ and $L$ might be due to the fact that the system is trying to find gains that can track the reference model better, but is saturated by the maximum stall current that can be applied to the motor. This can be observed in \cref{fig:mrac_simulation_results_90_seconds}, where the current is saturated at $\pm\SI{4.9}{\ampere}$. Looking back at \cref{fig:mrac_gains_100_seconds}, it's clear that the error between the motor angles and their respective reference model decrease over time as the adaptive gains update. However they don't go to zero, but end up with some steady-state error, though quite small. This tells us that the adaptive controller gains at some point reach a local optimum. Therefore, to combat the ever increasing gains, we may want to switch to a fixed-gain controller once the gains have converged. 
 
-\cref{fig:fixed_gains_mrac} shows a simulation over $\SI{10}{\second}$ using the adaptive gains found in \cref{fig:mrac_gains_100_seconds} after $\SI{100}{\second}$, but with the gains fixed instead of adaptive. Here we can see that the motors are able to track their reference angles rather well, only with a slight error in the transition to a new reference angle. Hence we may conclude that the MRAC scheme could prove useful in quickly tuning a position controller, when frequently switching between patients. 
+\cref{fig:fixed_gains_mrac} shows a simulation over $\SI{10}{\second}$ using the adaptive gains found in \cref{fig:mrac_gains_100_seconds} after $\SI{100}{\second}$, but with the gains fixed instead of adaptive. Here we can see that the motors are able to track their reference angles rather well, only with a slight error in the transition to a new reference angle. Looking at the evolution of the finger angles, they also move rather smoothly, indicating a comfortable, controlled user experience. Hence we may conclude that the MRAC scheme could prove useful in quickly tuning a position controller, when frequently switching between patients. 
 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_wn_5_long_run_2gains_0_100s.pdf}
+    \includegraphics[width=0.85\textwidth]{../Figures/Controller_design/mrac_pd_two_motors_k_0.5_wn_5_long_run_2gains_0_100s.pdf}
     \caption{Adaptive gains and error over time for MRAC scheme for $\SI{100}{\second}$, where $K_1$ and $L$ keep growing together.}
     \label{fig:mrac_gains_100_seconds}
 \end{figure}

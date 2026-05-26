@@ -153,7 +153,7 @@ Given a point $\mathbf{p}_n$ in frame $n$, we can express it in frame $1$ as:
 \subsection{Discrete-time system analysis}
 \label{subsec:theory_discrete_time_system_analysis}
 
-When realizing a controller on a digital computer, the relevant system is often modelled as a discrete-time system, as the samples are taken at discrete time steps. A sample of state $y$ at time step $k$ is denoted as $y[k]$. The sampling time, denoted by $T_s$, is the time between two consecutive samples, such that if $y[k] = y(t)$, then $y[k+1] = y(t + T_s)$. Usually the input of the system is denoted $u[k]$. Sometimes the discrete-time system can be expressed as a \textit{auto-regressive} (AR) model, where the current state of the system is given by a linear combination of the previous states and inputs, as shown in the following equation:
+When realizing a controller on a digital computer, the relevant system is often modelled as a discrete-time system, as the samples are taken at discrete time steps. A sample of state $y$ at time step $k$ is denoted as $y[k]$. The sampling time, denoted by $T_s$, is the time between two consecutive samples, such that if $y[k] = y(t)$, then $y[k+1] = y(t + T_s)$. Usually the input of the system is denoted $u[k]$. Sometimes the discrete-time system can be expressed as an \textit{auto-regressive} (AR) model, where the current state of the system is given by a linear combination of the previous states and inputs, as shown in the following equation:
 
 \begin{equation}
     y[k] = \sum_{i=1}^{n} a_i y[k-i] + \sum_{j=1}^{m} b_j u[k-j].
@@ -194,7 +194,7 @@ circle, i.e.,
 
 \subsection{State-Space representation}%
 \label{subsec:theory_control_state_space}
-A way to express a n'th order ordinary differential equation (ODE) is as a system of n first order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for \textit{linear time-invariant} (LTI) systems is the following:
+A way to express a nth order ordinary differential equation (ODE) is as a system of n first order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for \textit{linear time-invariant} (LTI) systems is the following:
 \begin{equation}
 \label{eq:theory_state_space_representation}
 \begin{aligned}
@@ -307,7 +307,7 @@ then the closed loop system becomes:
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = \mathbf{A}_m\mathbf{x}(t) + \mathbf{B}_m\mathbf{r}(t).
 \end{equation}
 
-Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same to \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. But for most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, which means that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
+Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same as \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. But for most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, which means that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
 
 \begin{equation}
     \label{eq:theory_control_mrac_input}
