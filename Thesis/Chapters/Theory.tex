@@ -2,6 +2,8 @@
 \chapter{Theoretical background}%
 \label{ch:theory}
 
+In this chapter, the relevant theoretical background for the subsequent chapters is presented. First, the anatomy of the hand is described, including relevant anatomical terminology and the structure of the hand. Then, the modelling theory is presented, relevant for the modelling of the exoskeleton in \cref{ch:modelling}. Finally, control theory is presented, necessary to understand the design of the controllers in \cref{ch:controller_design}.
+
 \section{Anatomy}%
 \label{sec:theory_anatomy}
 
@@ -17,12 +19,23 @@ Anatomical directional terms are used in relation to the \textit{anatomical posi
     \item \textbf{Distal} means away from or farthest from the point of origin of a part.
 \end{itemize}
 
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{Figures/Theory/anatomical_position.jpg}
+%     \caption{The anatomical position, with the corresponding directional terms. Image from~\cite{TeachMeAnatomyTermsOfLocation}.}%
+%     \label{fig:theory_anatomical_position}
+% \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{Figures/Theory/anatomical_position.jpg}
-    \caption{The anatomical position, with the corresponding directional terms. Image from~\cite{TeachMeAnatomyTermsOfLocation}.}%
+    \includegraphics[width=0.75\textwidth]{figures/Theory/AnatomicalPlanes.pdf}
+    \caption[Anatomical planes]{
+        Anatomical position with anatomical directional planes and terms. Illustration © Øyvind Stavdahl, licensed under
+        CC BY-NC-SA 4.0. Reproduced without modification from
+        \textcite{stavdahlAnatomicalPlanes2020}.
+    }
     \label{fig:theory_anatomical_position}
 \end{figure}
+
 
 \subsection{Anatomical terms of movement}%
 \label{subsec:theory_anatomical_terms_of_movement}
@@ -50,7 +63,7 @@ The phalanges are further divided into three sections: the \textit{proximal phal
 
 \begin{figure}
     \centering
-    \adjustbox{trim=0 {.30\height} 0 {.03\height}, clip, width=0.8\textwidth}{%
+    \adjustbox{trim=0 {.30\height} 0 {.03\height}, clip, width=0.7\textwidth}{%
         \includegraphics{Figures/Theory/hand_bones_no_bg.png}%
     }
     \caption{The bones of the hand. Image from author.}%
@@ -59,12 +72,12 @@ The phalanges are further divided into three sections: the \textit{proximal phal
 
 Further details about the joints are shown in Figure~\ref{fig:theory_hand_joints}. The joints of interest are the \textit{metacarpophalangeal joints} (MCP), the \textit{proximal interphalangeal joints} (PIP), and the \textit{distal interphalangeal joints} (DIP). The MCP joints are the ones between the metacarpals and the proximal phalanges, while the PIP joints are the ones between the proximal phalanges and the middle phalanges, and the DIP joints are the ones between the middle phalanges and the distal phalanges. The thumb only has an MCP joint and an interphalangeal joint (IP), as it does not have a middle phalanx.
 
-At each of the joints, there are collateral ligaments that provide stability. For the PIP, IP and DIP joints, they provide stiffness that prevents side to side motion. For the MCP joints they're relaxed when the finger is extended, facilitating for adduction and abduction, but stiff when the finger is flexed.
+At each of the joints, there are collateral ligaments that provide stability. For the PIP, IP and DIP joints, they provide stiffness that prevents side to side motion. For the MCP joints they're relaxed when the finger is extended, facilitating for adduction and abduction, but stiff when the finger is flexed \parencite{hangerAnatomyHand2025}.
 
 
 \begin{figure}
     \centering
-    \adjustbox{trim=0 {.30\height} 0 {.03\height}, clip, width=0.8\textwidth}{%
+    \adjustbox{trim=0 {.30\height} 0 {.03\height}, clip, width=0.7\textwidth}{%
         \includegraphics{Figures/Theory/hand_joints_2_pdf_no_bg.png}%
     }
     \caption{The joints of the hand. Image from author.}%
@@ -73,6 +86,8 @@ At each of the joints, there are collateral ligaments that provide stability. Fo
 
 \section{Modelling theory}%
 \label{sec:theory_modelling}
+
+To facilitate the modelling of the planar finger model in \cref{ch:modelling}, the following modelling theory is presented. First, the \textit{Euler--Lagrange equations}, as a way to derive the equations of motion for the finger, and \textit{homogenous transformations}, used to move between frames when deriving the kinematics of the finger. Both are well known concepts in the field of robotics, but the following definitions were based on \cite{freidovichControlMethodsRobotic2025}.
 
 \subsection{Euler-Lagrange equations}%
 \label{subsec:theory_modelling_euler_lagrange_equations}
@@ -85,14 +100,14 @@ The Euler-Lagrange equations are a set of second-order ordinary differential equ
 
 The Euler-Lagrange equations in vector form are given by:
 \begin{equation}
-    \frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{\partial \mathcal{L}}{\partial \dot{\mathbf{q}}} \right) - \frac{\partial \mathcal{L}}{\partial \mathbf{q}} = \mathbf{Q},
+    \frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{\partial \mathcal{L}}{\partial \dot{\mathbf{q}}} \right) - \frac{\partial \mathcal{L}}{\partial \mathbf{q}} = \mathbf{Q}, b
 \end{equation}
 where $\mathbf{q}$ are the generalized coordinates, which describe the configuration of the system, and $\mathbf{Q}$ are the generalized forces, describing the external influences on the system.
 
 \subsection{Homogenous transformations}%
 \label{subsec:theory_modelling_homogenous_transformations}
 
-When modelling kinematic chains, we often need to move between frames. This often includes both rotation and translation. An efficient way to represent this is by using \textit{homogenous transformations}. 
+When modelling kinematic chains, we often need to move between frames. This often includes both rotation and translation. An efficient way to represent this is by using homogenous transformations. 
 
 \subsection*{Definition}
 For a $2$D system, the rotation matrix for a counter-clockwise rotation by an angle $\theta$ is given by:
@@ -149,6 +164,9 @@ Given a point $\mathbf{p}_n$ in frame $n$, we can express it in frame $1$ as:
 
 \section{Control theory}%
 \label{sec:theory_control}
+
+To facilitate the design of the controllers in \cref{ch:controller_design}, the following control theory is presented. As the armature current dynamics of the brushed DC motor is discretized, \textit{discrete-time system analysis} is introduced, based on \cite{proakisDigitalSignalProcessing2014}. Then, the \textit{state-space representation} of a system is presented, which is a common way to represent dynamical systems in control theory. Further, for the estimation of unknown parameters in the brushed DC motor model in \cref{subsec:est_armature_inductance}, the \textit{static parametric model} (SPM) and the \textit{gradient method} are introduced. Finally, for the position controller in \cref{sec:mrac_implementation}, \textit{controllability} and \textit{model reference adaptive control} are presented.
+
 
 \subsection{Discrete-time system analysis}
 \label{subsec:theory_discrete_time_system_analysis}
@@ -213,7 +231,7 @@ A way to express a nth order ordinary differential equation (ODE) is as a system
 \end{aligned}
 \end{equation}
 
-Here, $\mathbf{x}(t)$ is the state vector, which contains all the information about the system at time $t$. $\mathbf{u}(t)$ is the input vector at time $t$. $\mathbf{d}(t)$ is a disturbance vector. $\mathbf{y}(t)$ is the output vector, which contains all the measurements of the system at time $t$.
+Here, $\mathbf{x}(t)$ is the state vector, which contains all the information about the system at time $t$. $\mathbf{u}(t)$ is the input vector at time $t$. $\mathbf{d}(t)$ is a disturbance vector. $\mathbf{y}(t)$ is the output vector, which contains all the measurements of the system at time $t$ \parencite{balchenReguleringsteknikk2016}.
 
 \subsection{Static parametric model (SPM)}%
 \label{subsec:theory_control_static_parametric_model}
@@ -261,12 +279,12 @@ For a LTI system, controllability can be determined by the rank of the controlla
     \mathcal{C} = [\mathbf{B}, \mathbf{A}\mathbf{B}, \mathbf{A}^2\mathbf{B}, \ldots, \mathbf{A}^{n-1}\mathbf{B}].
 \end{equation}
 
-If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, the system $(\mathbf{A}, \mathbf{B})$ is said to be \textit{controllable}.
+If $\text{rank}(\mathcal{C}) = n$, where $n$ is the dimension of the state vector $\mathbf{x}$, the system $(\mathbf{A}, \mathbf{B})$ is said to be \textit{controllable} \parencite{balchenReguleringsteknikk2016}.
 
 \subsection{Model Reference Adaptive Control (MRAC)}%
 \label{subsec:theory_control_mrac}
 
-\textit{Model Reference Adaptive Control} (MRAC) is a control strategy that aims to make the output of a system follow the output of a reference model, even in the presence of parameter uncertainties. The following definition of MRAC is based on \textcite[325--327]{ioannouRobustAdaptiveControl2012}. 
+\textit{Model Reference Adaptive Control} (MRAC) is a control strategy that aims to make the output of a system follow the output of a reference model, even with parameter uncertainties. The following definition of MRAC is based on \textcite[325--327]{ioannouRobustAdaptiveControl2012}. 
 
 Given the nth order LTI-system in state-space form,
 
@@ -281,7 +299,7 @@ and the reference model,
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}_m(t) = \mathbf{A}_m\mathbf{x}_m(t) + \mathbf{B}_m\mathbf{r}(t), \quad \mathbf{x}_m(t) \in \mathbb{R}^n, \mathbf{r}(t) \in \mathbb{R}^m.
 \end{equation}
 
-The reference model and input $\mathrm{r}(t)$ are chosen such that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix, and $(\mathbf{A}, \mathbf{B})$ must be \textit{controllable} for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
+The reference model and input $\mathrm{r}(t)$ are chosen such that $\mathbf{x}_m(t)$ represents the desired trajectory that $\mathbf{x}(t)$ should follow. Crucially, $\mathbf{A}_m$ must be a stable matrix, and $(\mathbf{A}, \mathbf{B})$ must be controllable for this to work. If matrices $\mathbf{A}$ and $\mathbf{B}$ are known, then the control input $\mathbf{u}(t)$ can be designed as follows:
 
 \begin{equation}
     \label{eq:theory_control_ideal_mrac_input}
@@ -307,7 +325,7 @@ then the closed loop system becomes:
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = \mathbf{A}_m\mathbf{x}(t) + \mathbf{B}_m\mathbf{r}(t).
 \end{equation}
 
-Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same as \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. But for most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, which means that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
+Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same as \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. For most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, meaning that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
 
 \begin{equation}
     \label{eq:theory_control_mrac_input}

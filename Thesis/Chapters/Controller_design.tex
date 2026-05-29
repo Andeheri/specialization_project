@@ -1,10 +1,12 @@
 \chapter{Controller design}%
 \label{ch:controller_design}
 
+In the following chapter, controllers for the armature current, output torque/force, and position of the exoskeleton will be designed, and analyzed. The controllers will be designed with a single brushed DC motor in mind. Therefore the controllers has be implemented for all motors in the real system. The controllers will be designed based on the motor and finger dynamics derived in \cref{ch:modelling}, and will be evaluated through simulations, using \textit{python} with the package \textit{scipy.integrate.solve\_ivp} \parencite{Solve_ivpSciPyV1170} to solve the differential equations. The results will be discussed further in \cref{ch:discussion}.
+
 \section{Current controller}
 \label{sec:controller_design_current_controller}
 
-To help facilitate the design of the torque/force and position controllers, we will first design a controller for the armature current $I_a$ with the armature voltage $E_a$ as input. This will allow us to treat the armature current as a control input in the other controllers, simplifying the dynamics significantly. In the actual system, the effective applied voltage will be set with \textit{pulse-width-modulation} (PWM). Therefore, we will assume that $E_a \in [-12, 12]\si{\volt}$. As the dynamics of the armature current is very fast, the controller has to be as cheap as possible to compute. Hence, it will be designed as a simple proportional (P) controller, but with a feedforward (FF) term to account for the back EMF. Let's first consider the electrical dynamics of the brushed DC motor from \cref{eq:motor_model_electrical_rewrite}:
+To facilitate the design of the torque/force and position controllers, we will first design a controller for the armature current $I_a$ with the armature voltage $E_a$ as input. This will allow us to treat the armature current as a control input in the other controllers, simplifying the dynamics significantly. In the actual system, the effective applied voltage will be set with \textit{pulse-width-modulation} (PWM). Therefore, we will assume that $E_a \in [-12, 12]\si{\volt}$. As the dynamics of the armature current is very fast, the controller has to be as cheap as possible to compute. Hence, it will be designed as a simple proportional (P) controller, but with a feedforward (FF) term to account for the back EMF. Consider the electrical dynamics of the brushed DC motor from \cref{eq:motor_model_electrical_rewrite}:
 
 \begin{equation}
     \label{eq:controller_design_electrical_dynamics}
@@ -25,7 +27,7 @@ Substituting \cref{eq:controller_design_voltage_input} into \cref{eq:controller_
     L_a \frac{\mathrm{d}I_a(t)}{\mathrm{d}t} + R_a I_a(t) = K_p (r(t) - I_a(t)) \triangleq u(t).
 \end{equation}
 
-This controller is supposed to be ran in real time on a microcontroller. Therefore it won't have access to continuous measurements, but rather discrete ones. Hence, we will need to discretize the controller for stability analysis and tuning. We'll assume that the dynamics of the motor are slow enough such that the feedforward term can be treated as a constant. This is a reasonable assumption since the feedforward term is based on the angular velocity, which changes relatively slowly compared to the armature current.
+The controller is supposed to be ran in real time on a microcontroller. Therefore it won't have access to continuous measurements, but rather discrete ones. Hence, we'll need to discretize the controller for stability analysis and tuning. We'll assume that the dynamics of the motor are slow enough such that the feedforward term can be treated as a constant. This is a reasonable assumption since the feedforward term is based on the angular velocity, which changes relatively slowly compared to the armature current.
 
 \subsection{Discretization of current controller}
 Suppose the controller is ran with a sampling period of $T_s$. Assuming that the input voltage $E_a$ is held constant between sampling times, i.e.,
@@ -174,7 +176,7 @@ To evaluate the controller, we will simulate it with the motor model in \cref{eq
     \hfill
     \subcaptionbox{$T_s=\SI{1.0}{\milli\second}$.\label{fig:controller_design_current_controller_simulation_small_Jm_1.0ms}}{%
         \includegraphics[width=0.49\textwidth]{../Figures/Controller_design/motor_current_control_feed_forward_P_FF_Ts_1.0ms_small_Jm.pdf}}
-    \caption{Effect of sampling time $T_s$ on the armature current response with a smaller motor inertia $J_m$.}
+    \caption{Effect of sampling time $T_s$ on the armature current response with a smaller motor inertia $J_m = \SI{0.5}{\gram \meter \squared}$.}
     \label{fig:controller_design_current_controller_simulation_small_Jm}
 \end{figure}
 
@@ -250,8 +252,17 @@ In the simulation, the resultant force after the friction was assumed directly a
 
 \begin{equation}
     \label{eq:controller_design_torque_control_reference_with_force_feedback_scaled_feedforward}
-    r_{\jnt{I_a}}(t) = \frac{1}{w_3}\frac{r_\jnt{F} r_{\jnt{spindle}}}{K_t} + \underbrace{K_p (r_{\jnt{F}} - F_{meas}(t)) + K_i \int_{t_0}^t (r_{\jnt{F}} - F_{meas}(\tau)) \, d\tau}_{\text{PI \, controller}}.
+    r_{\jnt{I_a}}(t) = \frac{1}{w_3}\left[\frac{r_\jnt{F} r_{\jnt{spindle}}}{K_t} + \underbrace{K_p (r_{\jnt{F}} - F_{meas}(t)) + K_i \int_{t_0}^t (r_{\jnt{F}} - F_{meas}(\tau)) \, d\tau}_{\text{PI \, controller}}\right].
 \end{equation}
+
+Given that the PI controller compensates for the friction in the system by increasing the reference current, it indirectly provides a measure of the actual friction in the system. Since the armature current is proportional to the torque generated by the motor, and hence the force pulling on the cable, the friction acting on the cable between the motor and the finger can be estimated as:
+
+\begin{equation}
+    \label{eq:controller_design_torque_control_friction_estimation}
+    F_{\jnt{friction}}(t) \approx \frac{K_t}{r_{\jnt{spindle}} w_3} \left[K_p (r_{\jnt{F}} - F_{meas}(t)) + K_i \int_{t_0}^t (r_{\jnt{F}} - F_{meas}(\tau)) \, d\tau\right].
+\end{equation}
+
+This could be useful for monitoring the system, and potentially for diagnosing issues with the system, such as wear and tear of the cables or bowden tubes.
 
 \begin{figure}[htbp]
     \centering

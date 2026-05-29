@@ -1,6 +1,8 @@
 \chapter{Discussion}%
 \label{ch:discussion}
 
+In the following chapter, the results and findings of the thesis will be discussed. The performance of the different controllers designed in \cref{ch:controller_design} will be analyzed and discussed, and the assumptions and limitations of the models developed in \cref{ch:modelling} will be evaluated. Finally, practical implementation considerations for implementing the controllers in the real system will be discussed, and an outlook on future work will be provided.
+
 \section{Current control}%
 \label{sec:discussion_current_control}
 
@@ -24,7 +26,7 @@ In \cref{sec:controller_design_torque_control}, torque control was considered us
 
 As discussed in \cref{sec:controller_design_torque_control}, there will be friction acting on the cable between the motor and the finger, from gliding through a bowden tube. Hence, the generated force pulling on the cable from the motor, will not be equal to the applied force on the whiffle tree, and hence the finger. Therefore, without any feedback on the applied force, the applied force on the finger will generally have a steady-state error from the reference force unless the friction is compensated for. By assuming a constant friction ratio, this can be calibrated for by artifically increasing the reference force by the estimated friction force. However, this is not a very robust solution, as the friction can change over time due to wear and tear, and also depends on the configuration of the finger.
 
-The integration of force sensors in the fingertips appears to be a more robust solution. With direct measurements of the applied force, the controller no longer has to rely solely on the current measurements as an estimate of the applied force to the finger. In \cref{sec:controller_design_torque_control}, a proportional and integral (PI) controller for the reference current was designed. Simulations showed that the controller was able to reach the desired applied force in a well-damped manner, using a artifically higher reference force for the motor to compensate for the friction.
+The integration of force sensors in the fingertips appears to be a more robust solution. With direct measurements of the applied force, the controller no longer has to rely solely on the current measurements as an estimate of the applied force to the finger. In \cref{sec:controller_design_torque_control}, a proportional and integral (PI) controller for the reference current was designed. Simulations showed that the controller was able to reach the desired applied force in a well-damped manner, using a artifically higher reference force for the motor to compensate for the friction. The PI-term could also be used to monitor the friction in the system, which could be useful for diagnosing issues such as wear and tear of the cables or bowden tubes. 
 
 It should be noted that the performance of the PI controller is dependent on the friction from the bowden tube. The proportional and integral gains were also just tuned empirically, so it's not clear how the controller would perform in the real system. The performance of the controller should hence be seen as an indication of the potential performance, rather than a precise prediction of the performance in the real system. And the controller gains should therefore be tuned carefully in the real system.
 

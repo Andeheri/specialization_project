@@ -1,6 +1,9 @@
 \chapter{Modelling}%
 \label{ch:modelling}
 
+To facilitate the controller design and simulations in \cref{ch:controller_design}, this chapter presents the dynamic models to describe the exoskeleton. First, a finger model is derived using the Euler--Lagrange equations. The brushed DC motor dynamics is then introduced based on \textcite{rahmanMathematicalModelBrushed2021}, and relevant motor parameters are estimated from the manufacturer datasheet. Finally, simplified load models for the motor and cable constraints are introduced to describe the interaction between the motors and the finger.
+
+
 \section{Finger model}%
 \label{sec:finger_model}
 
@@ -62,7 +65,7 @@ For the model, the phalanges will be modeleled as three links, with three revolu
     \end{tabular}
 \end{table}
 
-To model the dynamics of the finger, we'll use the Euler-Lagrange equations as shown in \cref{subsec:theory_modelling_euler_lagrange_equations}. We'll define our generalized coordinates as the relative joint angles, $\varphi_{\jnt{MCP}}$, $\varphi_{\jnt{PIP}}$ and $\varphi_{\jnt{DIP}}$:
+To model the dynamics of the finger, we'll use the Euler--Lagrange equations as shown in \cref{subsec:theory_modelling_euler_lagrange_equations}. We'll define our generalized coordinates as the relative joint angles, $\varphi_{\jnt{MCP}}$, $\varphi_{\jnt{PIP}}$ and $\varphi_{\jnt{DIP}}$:
 
 \begin{equation}
     \label{eq:modelling_finger_generalized_coordinates}
@@ -225,7 +228,7 @@ The total generalized forces can then be expressed as:
 
 \subsection{Rigid-body dynamics}
 
-For rigid-body mechanical systems, like the one we're modelling, the Euler-Lagrange equations can be written in matrix form as:
+For rigid-body mechanical systems, like the one we're modelling, the Euler--Lagrange equations can be written in matrix form as:
 
 \begin{equation}
     \label{eq:modelling_euler_lagrange_matrix_form}
@@ -348,7 +351,7 @@ Inserting all the results above and solving for $\ddot{\mathbf{q}}$, we can expr
 
 \section{Brushed DC Motor model}%
 \label{sec:brushed_dc_motor_model}
-In our system we're using a $\SI{12}{\volt}$ Brushed DC motor from Pololu \parencite{Pololu751}. The dynamical model is based on \cite{rahmanMathematicalModelBrushed2021}. The circuit diagram of the brushed DC motor is shown in \cref{fig:motor_circuit}. \cref{eq:motor_model_mechanical} describes the mechanical dynamics of the motor, and \cref{eq:motor_model_electrical} describes the electrical dynamics of the motor, defined as:
+In the physical system, $\SI{12}{\volt}$ brushed DC motors from Pololu \parencite{Pololu751} are used. The dynamical model of the brushed DC motor is based on \cite{rahmanMathematicalModelBrushed2021}. The circuit diagram of the brushed DC motor is shown in \cref{fig:motor_circuit}. \cref{eq:motor_model_mechanical} describes the mechanical dynamics of the motor, and \cref{eq:motor_model_electrical} describes the electrical dynamics of the motor, defined as:
 
 \begin{align}%
     \label{eq:motor_model_mechanical}
@@ -477,7 +480,7 @@ It's not possible to estimate the inertia of the rotor $J_m$, nor the armature i
 \subsection{Estimating the armature inductance and rotor inertia}%
 \label{subsec:est_armature_inductance}
 
-To estimate the armature inductance and rotor inertia, we can use a parameter identification method. We'll start by converting \cref{eq:motor_model_electrical_rewrite} to the Laplace domain, giving us:
+To estimate the armature inductance and rotor inertia, we can use a parameter identification method. Converting \cref{eq:motor_model_electrical_rewrite} to the \textit{Laplace domain} \parencite{LaplaceTransformOverview}, gives:
 
 \begin{equation}
     \label{eq:motor_model_electrical_laplace}
@@ -792,7 +795,7 @@ This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_m
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{../Figures/Controller_design/force_diagram.pdf}
-    \caption{Force application on the finger. The flexion motor applies a force $F_f$ on the flexion cable, which gets distributed to the three phalanges through the whiffle tree. Similarly, the extension motor applies a force $F_e$ on the extension cable, which also gets distributed to the three phalanges through its own whiffle tree.}
+    \includegraphics[width=0.75\textwidth]{../Figures/Controller_design/force_diagram.pdf}
+    \caption{Force application on the finger. Shows how the force from the flexion and extension motors gets distrubuted after the whiffle trees.}
     \label{fig:controller_design_force_application}
 \end{figure}
