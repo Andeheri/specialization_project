@@ -72,7 +72,7 @@ The phalanges are further divided into three sections: the \textit{proximal phal
 
 Further details about the joints are shown in Figure~\ref{fig:theory_hand_joints}. The joints of interest are the \textit{metacarpophalangeal joints} (MCP), the \textit{proximal interphalangeal joints} (PIP), and the \textit{distal interphalangeal joints} (DIP). The MCP joints are the ones between the metacarpals and the proximal phalanges, while the PIP joints are the ones between the proximal phalanges and the middle phalanges, and the DIP joints are the ones between the middle phalanges and the distal phalanges. The thumb only has an MCP joint and an interphalangeal joint (IP), as it does not have a middle phalanx.
 
-At each of the joints, there are collateral ligaments that provide stability. For the PIP, IP and DIP joints, they provide stiffness that prevents side to side motion. For the MCP joints they're relaxed when the finger is extended, facilitating for adduction and abduction, but stiff when the finger is flexed \parencite{hangerAnatomyHand2025}.
+At each of the joints, there are collateral ligaments that provide stability. For the PIP, IP and DIP joints, they provide stiffness that prevents side-to-side motion. For the MCP joints they're relaxed when the finger is extended, facilitating for adduction and abduction, but stiff when the finger is flexed \parencite{hangerAnatomyHand2025}.
 
 
 \begin{figure}
@@ -87,7 +87,7 @@ At each of the joints, there are collateral ligaments that provide stability. Fo
 \section{Modelling theory}%
 \label{sec:theory_modelling}
 
-To facilitate the modelling of the planar finger model in \cref{ch:modelling}, the following modelling theory is presented. First, the \textit{Euler--Lagrange equations}, as a way to derive the equations of motion for the finger, and \textit{homogenous transformations}, used to move between frames when deriving the kinematics of the finger. Both are well known concepts in the field of robotics, but the following definitions were based on \cite{freidovichControlMethodsRobotic2025}.
+To facilitate the modelling of the planar finger model in \cref{ch:modelling}, the following modelling theory is presented. First, the \textit{Euler--Lagrange equations} are introduced as a way to derive the equations of motion for the finger, and \textit{homogeneous transformations}, used to move between frames when deriving the kinematics of the finger. Both are well-known concepts in the field of robotics, but the following definitions were based on \cite{freidovichControlMethodsRobotic2025}.
 
 \subsection{Euler-Lagrange equations}%
 \label{subsec:theory_modelling_euler_lagrange_equations}
@@ -100,14 +100,14 @@ The Euler-Lagrange equations are a set of second-order ordinary differential equ
 
 The Euler-Lagrange equations in vector form are given by:
 \begin{equation}
-    \frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{\partial \mathcal{L}}{\partial \dot{\mathbf{q}}} \right) - \frac{\partial \mathcal{L}}{\partial \mathbf{q}} = \mathbf{Q}, b
+    \frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{\partial \mathcal{L}}{\partial \dot{\mathbf{q}}} \right) - \frac{\partial \mathcal{L}}{\partial \mathbf{q}} = \mathbf{Q}, 
 \end{equation}
 where $\mathbf{q}$ are the generalized coordinates, which describe the configuration of the system, and $\mathbf{Q}$ are the generalized forces, describing the external influences on the system.
 
-\subsection{Homogenous transformations}%
-\label{subsec:theory_modelling_homogenous_transformations}
+\subsection{Homogeneous transformations}%
+\label{subsec:theory_modelling_homogeneous_transformations}
 
-When modelling kinematic chains, we often need to move between frames. This often includes both rotation and translation. An efficient way to represent this is by using homogenous transformations. 
+When modelling kinematic chains, we often need to move between frames. This generally includes both rotation and translation. An efficient way to represent this is by using homogeneous transformations. 
 
 \subsection*{Definition}
 For a $2$D system, the rotation matrix for a counter-clockwise rotation by an angle $\theta$ is given by:
@@ -122,17 +122,17 @@ For a $2$D system, the rotation matrix for a counter-clockwise rotation by an an
 Given a translation vector from frame $i$ to frame $j$, written in terms of frame $i$, $\mathbf{d}_i^j = \begin{bmatrix}
     d_x^i \\
     d_y^i
-\end{bmatrix}$, the homogenous transformation matrix from frame $j$ to frame $i$, describing the rotation $\theta$ and translation $\mathbf{d}_i^j$ from frame $i$ to frame $j$, can be expressed as:
+\end{bmatrix}$, the homogeneous transformation matrix from frame $j$ to frame $i$, describing the rotation $\theta$ and translation $\mathbf{d}_i^j$ from frame $i$ to frame $j$, can be expressed as:
 
 \begin{equation}
-    \label{eq:theory_homogenous_transformation}
+    \label{eq:theory_homogeneous_transformation}
     \mathbf{H}_j^i = \begin{bmatrix}
         \mathbf{R}(\theta) & \mathbf{d}_i^j \\
         \mathbf{0}_{1 \times 2} & 1
     \end{bmatrix}.
 \end{equation}
 
-2D vectors represented in terms of homogenous transformations are defined as 3D vectors, where the first two elements represent the coordinates in the frame, and the third element is always $1$. For example, a point $\mathbf{p}_n$ in frame $n$ can be represented as:
+2D vectors represented in terms of homogeneous transformations are defined as 3D vectors, where the first two elements represent the coordinates in the frame, and the third element is always $1$. For example, a point $\mathbf{p}_n$ in frame $n$ can be represented as:
 
 \begin{equation}
     \mathbf{p}_n = \begin{bmatrix}
@@ -144,17 +144,17 @@ Given a translation vector from frame $i$ to frame $j$, written in terms of fram
 
 \subsection*{Useful properties}
 
-Given a kinematic chain of size $n$, we can express the homogenous transformation from frame $n$ to frame $1$ as the product of the homogenous transformations between each consecutive frame:
+Given a kinematic chain of size $n$, we can express the homogeneous transformation from frame $n$ to frame $1$ as the product of the homogeneous transformations between each consecutive frame:
 
 \begin{equation}
-    \label{eq:theory_homogenous_transformation_chain}
+    \label{eq:theory_homogeneous_transformation_chain}
     \mathbf{H}_n^1 = \mathbf{H}_2^1 \mathbf{H}_3^2 \cdots \mathbf{H}_n^{n-1}.
 \end{equation}
 
 Given a point $\mathbf{p}_n$ in frame $n$, we can express it in frame $1$ as:
 
 \begin{equation}
-    \label{eq:theory_homogenous_transformation_chain_application}
+    \label{eq:theory_homogeneous_transformation_chain_application}
     \mathbf{p}_1 = \begin{bmatrix}
         p_x^1 \\
         p_y^1 \\
@@ -307,7 +307,7 @@ The reference model and input $\mathrm{r}(t)$ are chosen such that $\mathbf{x}_m
     \quad \mathbf{K^*} \in \mathbb{R}^{m \times n}, \mathbf{L^*} \in \mathbb{R}^{m \times m}.
 \end{equation}
 
-This obtains the closed loop system:
+This yields the closed loop system:
 
 \begin{equation}
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = (\mathbf{A} - \mathbf{B}\mathbf{K^*})\mathbf{x}(t) + \mathbf{B}\mathbf{L^*}\mathbf{r}(t).
@@ -325,7 +325,7 @@ then the closed loop system becomes:
     \frac{\mathrm{d}}{\mathrm{d}t} \mathbf{x}(t) = \mathbf{A}_m\mathbf{x}(t) + \mathbf{B}_m\mathbf{r}(t).
 \end{equation}
 
-Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same as \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. For most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, meaning that $\mathbf{K^*}$ and $\mathbf{L^*}$ has to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we'll change the input in \cref{eq:theory_control_ideal_mrac_input} to:
+Hence the closed-loop dynamics of $\mathbf{x}(t)$ is the same as \cref{eq:theory_control_reference_model}, and $\mathbf{x}(t) \to \mathbf{x}_m(t)$ exponentially fast. For most cases, $\mathbf{A}$ and $\mathbf{B}$ are unknown, meaning that $\mathbf{K^*}$ and $\mathbf{L^*}$ have to be estimated online. Assuming that $\mathbf{K^*}$ and $\mathbf{L^*}$ exist, we will change the input in \cref{eq:theory_control_ideal_mrac_input} to:
 
 \begin{equation}
     \label{eq:theory_control_mrac_input}
@@ -356,4 +356,4 @@ we have the adaptive law:
     \end{aligned}
 \end{equation}
 
-\cite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\boldsymbol{\epsilon}(t)$ are bounded, and the tracking error $\boldsymbol{\epsilon}(t) \to 0$ as $t \to \infty$.
+\textcite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\boldsymbol{\epsilon}(t)$ are bounded, and the tracking error $\boldsymbol{\epsilon}(t) \to 0$ as $t \to \infty$.

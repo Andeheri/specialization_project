@@ -7,9 +7,9 @@ To facilitate the controller design and simulations in \cref{ch:controller_desig
 \section{Finger model}%
 \label{sec:finger_model}
 
-For modelling the finger, we're assuming that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and the PIP-joint, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint has a different support-structure, that makes it free to move laterally when the finger is extended. But this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger should be minimal.
+For modelling the finger, we assume that the motion is limited to a 2D-plane. This is mostly true, due to the collateral ligaments at the DIP- and PIP joints, preventing excessive side-to-side bending, as discussed in \cref{subsec:theory_hand_anatomy}. The MCP joint has a different support-structure, that makes it free to move laterally when the finger is extended. But this isn't as relevant to model for the task at hand, as the lateral movement from the cable pulling on the finger should be minimal.
 
-For the model, the phalanges will be modeleled as three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we'll add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers at each joint. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We'll model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}. It should be noted, that the parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of an unloaded finger to obtain realistic motion. 
+For the model, the phalanges will be modelled as three links, with three revolute joints, like a \textit{planar manipulator} \parencite{PlanarManipulatorOverview}. To model the stiffness from the tendons and ligaments, we will add a torsional spring at each joint. The springs will have a non-zero equilibrium angle, representing the natural resting position of the finger joints. The damping from the soft tissue will be modeled by torsional dampers at each joint. A schematic of the model can be seen in \cref{fig:modelling_finger_model}. We will model the links as rigid cylinders, with uniform mass distribution, and the joints as ideal revolute joints, with no friction. The parameters of the model are listed in \cref{tab:finger_params}. It should be noted, that the parameters of the finger model are not taken from any literature, but were selected empirically through repeated simulations of an unloaded finger to obtain realistic motion. 
 
 \begin{figure}
     \centering
@@ -65,7 +65,7 @@ For the model, the phalanges will be modeleled as three links, with three revolu
     \end{tabular}
 \end{table}
 
-To model the dynamics of the finger, we'll use the Euler--Lagrange equations as shown in \cref{subsec:theory_modelling_euler_lagrange_equations}. We'll define our generalized coordinates as the relative joint angles, $\varphi_{\jnt{MCP}}$, $\varphi_{\jnt{PIP}}$ and $\varphi_{\jnt{DIP}}$:
+To model the dynamics of the finger, we will use the Euler--Lagrange equations as shown in \cref{subsec:theory_modelling_euler_lagrange_equations}. We will define our generalized coordinates as the relative joint angles, $\varphi_{\jnt{MCP}}$, $\varphi_{\jnt{PIP}}$ and $\varphi_{\jnt{DIP}}$:
 
 \begin{equation}
     \label{eq:modelling_finger_generalized_coordinates}
@@ -109,12 +109,12 @@ The rotational kinetic energy of the system is rather straightforward to derive.
 
 \subsection*{Translational kinetic energy}
 
-The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the center of mass of each link and taking the time derivative. To find the center of mass, we'll use homogenous transformations, as described in \cref{subsec:theory_modelling_homogenous_transformations}. 
+The translational kinetic energy is a bit more complex to derive, as the linear velocity of each link depends on the geometry of the system. The linear velocity of each link can be derived by finding the center of mass of each link and taking the time derivative. To find the center of mass, we will use homogeneous transformations, as described in \cref{subsec:theory_modelling_homogeneous_transformations}. 
 
-Let's start by defining frames for moving between the links. We'll define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is aligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is aligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is aligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is aligned with the distal phalanx. A visualization of the frames is shown in \cref{fig:modelling_finger_model_frames}. The homogenous transformations between these frames can be expressed as:
+Let's start by defining frames for moving between the links. We will define the static world frame as frame $i$, attached to the MCP joint, where the x-axis is aligned with the metacarpal. The next is frame $PP$, attached to the PIP joint, where the x-axis is aligned with the proximal phalanx. Subsequently we have frame $MP$, attached to the DIP joint, where the x-axis is aligned with the middle phalanx. Finally, we have frame $DP$, attached to the tip of the finger, where the x-axis is aligned with the distal phalanx. A visualization of the frames is shown in \cref{fig:modelling_finger_model_frames}. The homogeneous transformations between these frames can be expressed as:
 
 \begin{equation}
-    \label{eq:modelling_homogenous_transformations}
+    \label{eq:modelling_homogeneous_transformations}
     \begin{aligned}
         \mathbf{H}_{PP}^i &= \begin{bmatrix}
         \mathbf{R}(\varphi_{\jnt{MCP}}) & \mathbf{R}(\varphi_{\jnt{MCP}})\mathbf{e}_1 l_{\jnt{PP}}\\
@@ -170,7 +170,7 @@ Extracting the x and y components of the position, defining them as $\mathbf{r}_
 
 \subsection{Potential energy}
 
-For the potential energy, one would normally consider the gravitational potential energy. However, since the finger is relatively light and the motion during gripping tasks is mostly transverse to gravity, we'll omit the gravitational potential energy for simplicity. For clarity, we'll model the torsional springs as generalized forces, instead of including them in the potential energy. Hence, the potential energy of the system can be expressed as $V = 0$.
+For the potential energy, one would normally consider the gravitational potential energy. However, since the finger is relatively light and the motion during gripping tasks is mostly transverse to gravity, we will omit the gravitational potential energy for simplicity. For clarity, we will model the torsional springs as generalized forces, instead of including them in the potential energy. Hence, the potential energy of the system can be expressed as $V = 0$.
 
 \subsection{Generalized forces}
 
@@ -235,14 +235,14 @@ For rigid-body mechanical systems, like the one we're modelling, the Euler--Lagr
     \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})\dot{\mathbf{q}} + \mathbf{G}(\mathbf{q}) = \boldsymbol{\tau}.
 \end{equation}
 
-The \textit{inertia matrix} $\mathbf{M}(\mathbf{q})$ is a symmetric positive-definite matrix that represents the mass distribution of the system. We'll define $\varphi_{\jnt{MCP}} \triangleq \varphi_1$, $\varphi_{\jnt{PIP}} \triangleq \varphi_2$, and $\varphi_{\jnt{DIP}} \triangleq \varphi_3$, the cumulative angles $\varphi_{12} \triangleq \varphi_1 + \varphi_2$, $\varphi_{23} \triangleq \varphi_2 + \varphi_3$, and the shorthand form $c_\varphi \triangleq \cos(\varphi)$, $s_\varphi \triangleq \sin(\varphi)$. Based on the E.L.-equations the inertia matrix in our system then equates to:
+The \textit{inertia matrix} $\mathbf{M}(\mathbf{q})$ is a symmetric positive-definite matrix that represents the mass distribution of the system. We will define $\varphi_{\jnt{MCP}} \triangleq \varphi_1$, $\varphi_{\jnt{PIP}} \triangleq \varphi_2$, and $\varphi_{\jnt{DIP}} \triangleq \varphi_3$, the cumulative angles $\varphi_{12} \triangleq \varphi_1 + \varphi_2$, $\varphi_{23} \triangleq \varphi_2 + \varphi_3$, and the shorthand form $c_\varphi \triangleq \cos(\varphi)$, $s_\varphi \triangleq \sin(\varphi)$. Based on the E.L.-equations the inertia matrix in our system then equates to:
 
 \begin{equation}
     \label{eq:modelling_kinetic_energy_inertia_matrix}
     \mathbf{M}(\mathbf{q}) = \left[\begin{matrix}p_{1} + p_{2} c_{\varphi_{2}} + p_{3} c_{\varphi_{23}} + p_{4} c_{\varphi_{3}} & p_{4} c_{\varphi_{3}} + p_{5} + p_{6} c_{\varphi_{2}} + p_{7} c_{\varphi_{23}} & p_{7} c_{\varphi_{23}} + p_{8} + p_{9} c_{\varphi_{3}}\\p_{4} c_{\varphi_{3}} + p_{5} + p_{6} c_{\varphi_{2}} + p_{7} c_{\varphi_{23}} & p_{4} c_{\varphi_{3}} + p_{5} & p_{8} + p_{9} c_{\varphi_{3}}\\p_{7} c_{\varphi_{23}} + p_{8} + p_{9} c_{\varphi_{3}} & p_{8} + p_{9} c_{\varphi_{3}} & p_{8}\end{matrix}\right],
 \end{equation}
 
-where the different $p_i$'s are shown in \cref{tab:dynamics_params}. The \textit{coriolis and centrifugal matrix} $\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})$ represents the coriolis and centrifugal forces that arise from the motion of the system. For our system, it equates to:
+where the different $p_i$'s are shown in \cref{tab:dynamics_params}. The \textit{Coriolis and centrifugal matrix} $\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})$ represents the Coriolis and centrifugal forces that arise from the motion of the system. For our system, it equates to:
 
 \begin{equation}
     \label{eq:modelling_coriolis_matrix}
@@ -500,7 +500,7 @@ Applying the filter to \cref{eq:motor_model_electrical_laplace} gives us:
     \frac{1}{\Lambda_{I_a}(s)} E_a(s) = \frac{1}{\Lambda_{I_a}(s)} (L_a s + R_a) I_a(s) + \frac{1}{\Lambda_{I_a}(s)} K_b s \theta(s).
 \end{equation*}
 
-Ordering it around, moving all measured signals and known parameters to the left, and all factors with the unknown parameter $L_a$ to the right, we get:
+Rearranging, moving all measured signals and known parameters to the left, and all factors with the unknown parameter $L_a$ to the right, we get:
 
 \begin{equation}
     \label{eq:motor_model_electrical_filtered}
@@ -510,7 +510,7 @@ Ordering it around, moving all measured signals and known parameters to the left
     \implies z_{\jnt{L_a}} = \theta^*_{\jnt{L_a}} \Phi_{\jnt{L_a}}.
 \end{equation*}
 
-Hence we've transformed the system to a SPM like discussed in \cref{subsec:theory_control_static_parametric_model}. We can do the same for the inertia of the rotor $J_m$. We'll start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
+Hence we've transformed the system to a SPM like discussed in \cref{subsec:theory_control_static_parametric_model}. We can do the same for the inertia of the rotor $J_m$. We will start by converting \cref{eq:motor_model_mechanical_rewrite} to the Laplace domain, assuming there is no external load ($\tau_l \equiv 0$), giving us:
 
 \begin{equation}
     \label{eq:motor_model_mechanical_laplace}
@@ -524,7 +524,7 @@ Since we're only measuring $\theta(t)$ and not its derivatives, we have to apply
     \Lambda_{\theta}(s) = s^2 + \lambda_1 s + \lambda_0, \quad \lambda_0, \lambda_1 > 0.
 \end{equation}
 
-Applying the filter to \cref{eq:motor_model_mechanical_laplace}, moving all measured signals and known parameters to the left, and all factors with the unkown parameter $J_m$ to the right, we get:
+Applying the filter to \cref{eq:motor_model_mechanical_laplace}, moving all measured signals and known parameters to the left, and all factors with the unknown parameter $J_m$ to the right, we get:
 
 \begin{equation}
     \label{eq:motor_model_mechanical_filtered}
@@ -543,21 +543,24 @@ Combining \cref{eq:motor_model_electrical_filtered} and \cref{eq:motor_model_mec
     \begin{bmatrix}
         z_{\jnt{L_a}} \\
         z_{\jnt{J_m}}
-    \end{bmatrix}}_{\textstyle \mathbf{z}} =
+    \end{bmatrix}}_{\textstyle{\mathbf{z}}}
+    =
     \underbrace{
     \begin{bmatrix}
-        L_a & J_m
-    \end{bmatrix}}_{\textstyle {\boldsymbol{\theta}^*}^\intercal}
+        \Phi_{\jnt{L_a}} & 0 \\
+        0 & \Phi_{\jnt{J_m}}
+    \end{bmatrix}}_{\textstyle{\boldsymbol{\Phi}}}
     \underbrace{
     \begin{bmatrix}
-        \Phi_{\jnt{L_a}} \\
-        \Phi_{\jnt{J_m}}
-    \end{bmatrix}}_{\textstyle \boldsymbol{\Phi}}.
+        L_a \\
+        J_m
+    \end{bmatrix}}_{\textstyle{\boldsymbol{\theta}^*}};
 \end{equation}
 
 \begin{equation*}
-    \Longrightarrow \quad \mathbf{z} = {\boldsymbol{\theta}^*}^\intercal \boldsymbol{\Phi}.
+    \Longrightarrow \quad \mathbf{z} = \boldsymbol{\Phi} \boldsymbol{\theta}^*.
 \end{equation*}
+
 
 
 Using the gradient method developed in \cref{subsec:theory_gradient_method}, with 
@@ -601,7 +604,7 @@ while applying a step input $E_a = \SI{12}{\volt}$ at $t = \SI{50}{\milli\second
 \subsection{Mass-spring-damper load}%
 \label{subsec:mass_spring_model}
 
-In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, and that the configuration of the whiffle tree is unkown, the full finger model isn't observable, and can't be used for position control design. For analysis, we'll instead assume that the finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we'll model the load torque $\tau_l$ as:
+In \cref{sec:finger_model} we assumed that the finger could be modelled as several torsional mass-spring-damper systems. Since we can't measure the finger-angles, and that the configuration of the whiffle tree is unknown, the full finger model isn't observable, and can't be used for position control design. For analysis, we will instead assume that the finger can be modelled as a single mass-spring-damper system, acting on the motor as $\tau_l$. This is a simplification, but it allows for a better analysis of the system. Hence we will model the load torque $\tau_l$ as:
 
 \begin{equation}
     \tau_l = J \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + c \frac{\mathrm{d}\theta}{\mathrm{d}t} + k (\theta - \theta_{eq}),
@@ -705,7 +708,7 @@ where $r_{spindle}$ is the radius of the spindle mounted on the motor, $\theta$ 
     L_{finger}(\mathbf{q}) = \sum_{i = 1}^{3} w_i ||\mathbf{r}_{a, i} - \mathbf{r}_{t, i}||,
 \end{equation}
 
-where $\mathbf{r}_{a, i}$ and $\mathbf{r}_{t, i}$ are the attachment and target points of the $i$-th phalanx, respectively, shown in \cref{fig:controller_design_force_application}. The distance between the attachment and target points of the i'th phalanx is scaled with the force ratio $w_i$ to get a better estimate of the total length of cable with the whiffle tree. Differentiating the constraint, we get the velocity constraint:
+where $\mathbf{r}_{a, i}$ and $\mathbf{r}_{t, i}$ are the attachment and target points of the $i$-th phalanx, respectively, shown in \cref{fig:controller_design_force_application}. The distance between the attachment and target points of the $i$'th phalanx is scaled with the force ratio $w_i$ to get a better estimate of the total length of cable with the whiffle tree. Differentiating the constraint, we get the velocity constraint:
 
 \begin{equation}
     \dot{g}(\omega, \mathbf{q}, \dot{\mathbf{q}}) = r_{spindle} \omega + \frac{\partial L_{finger}}{\partial \mathbf{q}} \dot{\mathbf{q}} = 0,
@@ -726,13 +729,13 @@ To reduce numerical drift, Baumgarte stabilization is added \parencite{baumgarte
 
 The final constraint in \cref{baumgarte} is defined separately for the flexion and extension cables. The corresponding Lagrange multipliers are treated as the cable tensions $T_f$ and $T_e$ for the flexion and extension cable, respectively, and are solved simultaneously at each timestep.
 
-Since the cables only can pull on the finger, we further impose that the cable tensions must be non-negative:
+Since the cables can only pull on the finger, we further impose that the cable tensions must be non-negative:
 
 \begin{equation}
     T_f, T_e \geq 0.
 \end{equation}
 
-To be clear, this implementation of the cable tension is not a perfect emulation of the real system. In reality, the cable is slightly elastic, and the whiffle trees will provide some friction. There will also be more cable in the system. However, considering that the position of the attachment points, target points, and configuration of whiffle trees are not yet decided in the real system. This should provide a good enough approximation to test the position controller, and get a better understanding of the dynamics of the system.
+To be clear, this implementation of the cable tension is not a perfect emulation of the real system. In reality, the cable is slightly elastic, and the whiffle trees will provide some friction. There will also be more cable in the system. However, considering that the position of the attachment points, target points, and configuration of whiffle trees are not yet decided in the real system, this should provide a good enough approximation to test the position controller, and get a better understanding of the dynamics of the system.
 
 \subsubsection{Updated dynamics with the cable tension}
 
@@ -796,6 +799,6 @@ This gives us the updated finger dynamics from \cref{eq:modelling_equations_of_m
 \begin{figure}
     \centering
     \includegraphics[width=0.75\textwidth]{../Figures/Controller_design/force_diagram.pdf}
-    \caption{Force application on the finger. Shows how the force from the flexion and extension motors gets distrubuted after the whiffle trees.}
+    \caption{Force application on the finger. Shows how the force from the flexion and extension motors gets distributed after the whiffle trees.}
     \label{fig:controller_design_force_application}
 \end{figure}
