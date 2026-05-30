@@ -7,7 +7,7 @@ In this chapter, the relevant theoretical background for the subsequent chapters
 \section{Anatomy}%
 \label{sec:theory_anatomy}
 
-The hand is a complex biomechanical system. To explain different aspects of the hand in relation to one another, we use \textit{anatomical terminology} [\cite{AnatomicalTerminologySEER}], or more specifically \textit{anatomical directional terms}. Additionally when describing actions of muscles upon the skeleton, we use \textit{anatomical terms of movement} [\cite{TermsOfMovementTeachMeAnatomy}].
+The hand is a complex biomechanical system. To explain different aspects of the hand in relation to one another, we use \textit{anatomical terminology} \parencite{AnatomicalTerminologySEER}, or more specifically \textit{anatomical directional terms}. Additionally when describing actions of muscles upon the skeleton, we use \textit{anatomical terms of movement} \parencite{TermsOfMovementTeachMeAnatomy}.
 
 \subsection{Anatomical directional terms}%
 \label{subsec:theory_anatomical_directional_terms}
@@ -51,7 +51,7 @@ To explain the actions of muscles upon the skeleton, we use anatomical terms of 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Figures/Theory/anatomical_movements.jpg}
-    \caption{Anatomical terms of movement. Image from~\cite{TermsOfMovementTeachMeAnatomy}.}%
+    \caption{Anatomical terms of movement. Image from~\parencite{TermsOfMovementTeachMeAnatomy}.}%
     \label{fig:theory_anatomical_terms_of_movement}
 \end{figure}
 
@@ -212,7 +212,7 @@ circle, i.e.,
 
 \subsection{State-Space representation}%
 \label{subsec:theory_control_state_space}
-A way to express a nth order ordinary differential equation (ODE) is as a system of n first order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for \textit{linear time-invariant} (LTI) systems is the following:
+A way to express a $n$th-order ordinary differential equation (ODE) is as a system of $n$ first-order ODEs. This is called the \textit{state-space representation} of the system. A state-space representation commonly used in control theory for \textit{linear time-invariant} (LTI) systems is the following:
 \begin{equation}
 \label{eq:theory_state_space_representation}
 \begin{aligned}
@@ -352,8 +352,8 @@ we have the adaptive law:
 \begin{equation}
     \begin{aligned}
         \dot{\mathbf{K}}(t) &= \mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon} \mathbf{x}^\intercal sgn(l), \\
-        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon} \mathbf{r}^\intercal sgn(l).
+        \dot{\mathbf{L}}(t) &= -\mathbf{B}_m^\intercal \mathbf{P} \boldsymbol{\epsilon} \mathbf{r}^\intercal sgn(l),
     \end{aligned}
 \end{equation}
 
-\textcite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\boldsymbol{\epsilon}(t)$ are bounded, and the tracking error $\boldsymbol{\epsilon}(t) \to 0$ as $t \to \infty$.
+where $l=1$ if $\mathbf{L}^*>0$ and $l=-1$ if $\mathbf{L}^*<0$. \textcite{ioannouRobustAdaptiveControl2012} proves, that $\mathbf{K}(t)$, $\mathbf{L}(t)$, and $\boldsymbol{\epsilon}(t)$ are bounded, and the tracking error $\boldsymbol{\epsilon}(t) \to 0$ as $t \to \infty$.
